@@ -1,12 +1,7 @@
-from PyQt5.QtWidgets import QDesktopWidget
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QTextBrowser
-from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QPixmap
+from email import header
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import sys
 
 app = QApplication(sys.argv)
@@ -14,18 +9,28 @@ window = QWidget()
 
 def main_window() -> None:
         global window
-        layout = QHBoxLayout()
+        main_layout = QVBoxLayout()
         
-        header = QVBoxLayout()
-        label = QLabel()
-        label.setPixmap(QPixmap('resources/icon.png'))
-        header.addWidget(label)
+        header_height = 100
+        header_widget = QWidget()
         
-        header_text = 
+        header_layout = QHBoxLayout(header_widget)
         
-        layout.addLayout(header)
+        header_pixmap = QPixmap('resources/icon.png')
+        header_pixmap = header_pixmap.scaled(header_height - 20, header_height - 20, aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
         
-        window.setLayout(layout)
+        header_label = QLabel()
+        header_label.setPixmap(header_pixmap)
+        header_layout.addWidget(header_label)
+        
+        header_text = QLabel(text='Звонилка')
+        header_layout.addWidget(header_text)
+        header_widget.setFixedHeight(header_height)
+        
+        main_layout.addWidget(header_widget)
+        main_layout.addStretch(1)
+        
+        window.setLayout(main_layout)
 
 if __name__ == '__main__':
         window.resize(800, 600)
