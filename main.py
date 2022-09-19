@@ -17,15 +17,19 @@ def main_window() -> None:
         header_layout = QHBoxLayout(header_widget)
         
         header_pixmap = QPixmap('resources/icon.png')
-        header_pixmap = header_pixmap.scaled(header_height - 20, header_height - 20, aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio)
+        header_pixmap = header_pixmap.scaled(header_height - 20, header_height - 20)
         
         header_label = QLabel()
         header_label.setPixmap(header_pixmap)
+        header_label.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Ignored)
         header_layout.addWidget(header_label)
         
         header_text = QLabel(text='Звонилка')
+        header_text.setAlignment(Qt.AlignmentFlag.AlignLeft)
         header_layout.addWidget(header_text)
+        
         header_widget.setFixedHeight(header_height)
+        header_widget.setStyleSheet('QWidget { background-color: qlinear-gradient(90deg, rgba(255,237,0,1) 0%, rgba(2,0,36,0) 100%); }')
         
         main_layout.addWidget(header_widget)
         main_layout.addStretch(1)
