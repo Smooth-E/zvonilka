@@ -7,34 +7,38 @@ import sys
 app = QApplication(sys.argv)
 window = QWidget()
 
-def main_window() -> None:
+def main_layout() -> None:
         global window
         main_layout = QVBoxLayout()
         
-        header_height = 100
         header_widget = QWidget()
-        
-        header_layout = QHBoxLayout(header_widget)
-        
-        header_pixmap = QPixmap('resources/icon.png')
-        header_pixmap = header_pixmap.scaled(header_height - 20, header_height - 20)
-        
-        header_label = QLabel()
-        header_label.setPixmap(header_pixmap)
-        header_label.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Ignored)
-        header_layout.addWidget(header_label)
-        
-        header_text = QLabel(text='Звонилка')
-        header_text.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        header_layout.addWidget(header_text)
-        
-        header_widget.setFixedHeight(header_height)
-        header_widget.setStyleSheet('QWidget { background-color: qlinear-gradient(90deg, rgba(255,237,0,1) 0%, rgba(2,0,36,0) 100%); }')
-        
+        header_widget.setObjectName('HeaderWidget')
+        stylesheet = 'QWidget#HeaderWidget {background: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 transparent, stop:1 yellow); }'
+        # ylesheet = "QWidget#HeaderWidget {background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 cyan, stop:1 blue);}"
+        # stylesheet = 'QWidget { background: yellow }'
+        header_widget.setStyleSheet(stylesheet)
         main_layout.addWidget(header_widget)
+        header_layout = QHBoxLayout(header_widget)
+        pixmap = QPixmap('resources/icon.png').scaled(70, 70)
+        header_icon = QLabel()
+        header_icon.setPixmap(pixmap)
+        header_icon.setFixedWidth(pixmap.width())
+        header_layout.addWidget(header_icon)
+        header_text_group_widget = QWidget()
+        header_layout.addWidget(header_text_group_widget)
+        header_text_group_layout = QVBoxLayout(header_text_group_widget)
+        header_main_text = QLabel(text='Звонилка')
+        font = header_main_text.font()
+        font.setPointSize(14)
+        header_main_text.setFont(font)
+        header_secondary_text = QLabel(text='Приложение для управления электронными звонками.')
+        header_text_group_layout.addWidget(header_main_text)
+        header_text_group_layout.addWidget(header_secondary_text)
+        
         main_layout.addStretch(1)
         
         window.setLayout(main_layout)
+
 
 if __name__ == '__main__':
         window.resize(800, 600)
@@ -45,5 +49,5 @@ if __name__ == '__main__':
         window.show()
         window.setWindowTitle('Звонилка')
         window.setWindowIcon(QIcon('resources/icon.png'))
-        main_window()
+        main_layout()
         sys.exit(app.exec_())
