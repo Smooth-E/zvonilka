@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
+import json
 
 app = QApplication(sys.argv)
 window = QWidget()
@@ -34,7 +35,26 @@ def main_layout() -> None:
         header_text_group_layout.addWidget(header_main_text)
         header_text_group_layout.addWidget(header_secondary_text)
         
-        main_layout.addStretch(1)
+        with open('config.json', 'r') as config:
+                config : dict = json.load(config)
+        
+        useful_part_widget = QWidget()
+        main_layout.addWidget(useful_part_widget)
+        useful_part_layout = QVBoxLayout(useful_part_widget)
+        
+        default_melody_widget = QLabel()
+        default_melody_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Minimum)
+        default_melody_widget.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
+        useful_part_layout.addWidget(default_melody_widget)
+        default_melody_layout = QVBoxLayout(default_melody_widget)
+        default_melody_header = QLabel(text='Мелодия звонка по умолчанию: ')
+        default_melody_layout.addWidget(default_melody_header)
+        default_melody_picker_widget = QWidget()
+        default_melody_layout.addWidget(default_melody_picker_widget)
+        default_melody_picker_layout = QHBoxLayout(default_melody_picker_widget)
+        default_melody_picker_layout.setSpacing(0)
+        default_melody_picker_display = QTextEdit('some/path/to/something')
+        default_melody_picker_layout.addWidget(default_melody_picker_display)
         
         window.setLayout(main_layout)
 
