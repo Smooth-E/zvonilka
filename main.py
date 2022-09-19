@@ -10,12 +10,11 @@ window = QWidget()
 def main_layout() -> None:
         global window
         main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
         
         header_widget = QWidget()
         header_widget.setObjectName('HeaderWidget')
         stylesheet = 'QWidget#HeaderWidget {background: qlineargradient(spread:pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 transparent, stop:1 yellow); }'
-        # ylesheet = "QWidget#HeaderWidget {background: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 cyan, stop:1 blue);}"
-        # stylesheet = 'QWidget { background: yellow }'
         header_widget.setStyleSheet(stylesheet)
         main_layout.addWidget(header_widget)
         header_layout = QHBoxLayout(header_widget)
