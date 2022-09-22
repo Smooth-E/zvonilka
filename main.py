@@ -1,4 +1,3 @@
-from email import header
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -42,8 +41,7 @@ def main_layout() -> None:
         main_layout.addWidget(useful_part_widget)
         useful_part_layout = QVBoxLayout(useful_part_widget)
         
-        default_melody_widget = QLabel()
-        default_melody_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Minimum)
+        default_melody_widget = QFrame()
         default_melody_widget.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
         useful_part_layout.addWidget(default_melody_widget)
         default_melody_layout = QVBoxLayout(default_melody_widget)
@@ -52,9 +50,31 @@ def main_layout() -> None:
         default_melody_picker_widget = QWidget()
         default_melody_layout.addWidget(default_melody_picker_widget)
         default_melody_picker_layout = QHBoxLayout(default_melody_picker_widget)
-        default_melody_picker_layout.setSpacing(0)
-        default_melody_picker_display = QTextEdit('some/path/to/something')
+        default_melody_picker_layout.setContentsMargins(0, 0, 0, 0)
+        default_melody_picker_display = QLineEdit('some/path/to/something')
         default_melody_picker_layout.addWidget(default_melody_picker_display)
+        default_melody_picker_button = QPushButton()
+        default_melody_picker_button.setText('Открыть файл')
+        pixmap = window.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon)
+        default_melody_picker_button.setIcon(pixmap)
+        default_melody_picker_layout.addWidget(default_melody_picker_button)
+        
+        two_columns_widget = QWidget()
+        two_columns_widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+        two_columns_layout = QHBoxLayout(two_columns_widget)
+        
+        timetable_widget = QFrame()
+        timetable_widget.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
+        two_columns_layout.addWidget(timetable_widget)
+        timetable_layout = QVBoxLayout(timetable_widget)
+        
+        extra_widget = QFrame()
+        extra_widget.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
+        two_columns_layout.addWidget(extra_widget)
+        extra_layout = QVBoxLayout(extra_widget)
+        
+        
+        main_layout.addWidget(two_columns_widget)
         
         window.setLayout(main_layout)
 
