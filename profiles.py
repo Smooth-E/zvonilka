@@ -155,6 +155,16 @@ def get_all() -> List[Dict[str, Union[str, QColor, Dict[QTime, str]]]]:
     return copy(_profiles)
 
 
+def get(profile_id: int) -> Union[Dict[str, Union[str, QColor, Dict[QTime, str]]], None]:
+    global _profiles
+    _load_profiles()
+
+    for profile in _profiles:
+        if profile['id'] == profile_id:
+            return copy(profile)
+    return None
+
+
 def replace(
     value_from: Dict[str, Union[str, QColor, Dict[QTime, str]]], 
     value_to: Dict[str, Union[str, QColor, Dict[QTime, str]]]

@@ -1,5 +1,6 @@
 from PyQt6.QtCore import *
 from typing import *
+from copy import copy
 import json
 import os
 
@@ -9,7 +10,7 @@ _loaded = False
 _calendar: Dict[QDate, int] = { }
 
 
-def _save() -> None:
+def _save_calendar() -> None:
     global _calendar, _file_path
 
     serialized_calendar = { }
@@ -26,7 +27,7 @@ def _save() -> None:
         print(exception.with_traceback())
 
 
-def _load() -> None:
+def _load_calendar() -> None:
     global _loaded, _file_path, _calendar
 
     if _loaded:
@@ -54,15 +55,21 @@ def _load() -> None:
 
 def set_profile(date: QDate, profile: int) -> None:
     global _calendar
-    _load()
+    _load_calendar()
 
     _calendar[date] = profile
-    _save()
+    _save_calendar()
 
 
 def notify_profile_removal(id: int):
     global _calendar
-    _load()
+    _load_calendar()
 
     _calendar = {key:value for key, value in _calendar if value != id}
-    _save()
+    _save_calendar()
+
+
+def get_calendar() -> Dict[QDate, int]:
+    global _calendar
+    _load_calendar()
+    return copy(_calendar)

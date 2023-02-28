@@ -3,6 +3,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtMultimedia import *
 from playsound import playsound as play_sound
+from widgets import *
 import settings
 import sys
 
@@ -35,7 +36,7 @@ def on_calendar_selection_changed(calendar: QCalendarWidget) -> None:
 def create_calendar_section() -> QWidget:
     frame = create_section_frame()
 
-    calendar = QCalendarWidget()
+    calendar = ReactiveCalendarWidget()
     calendar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
     calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
     calendar.selectionChanged.connect(lambda: on_calendar_selection_changed(calendar))
