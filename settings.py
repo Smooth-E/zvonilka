@@ -1,4 +1,3 @@
-import os
 import json
 
 
@@ -15,7 +14,7 @@ def _construct_settings_object() -> dict:
 
 def _deserialize_settings(dictionary: dict) -> None:
     global default_melody
-    
+
     default_melody = dictionary.get('default_melody', 'melody.wav')
 
 

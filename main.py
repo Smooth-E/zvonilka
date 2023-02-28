@@ -5,8 +5,6 @@ from PyQt6.QtMultimedia import *
 from playsound import playsound as play_sound
 import settings
 import sys
-import os
-import json
 
 
 application = QApplication(sys.argv)
@@ -56,7 +54,7 @@ def on_default_melody_path_edited(new_path: str) -> None:
 
 def play_default_melody() -> None:
     melody = settings.default_melody
-    play_sound(melody)
+    play_sound(melody, False)
 
 
 def pick_default_melody() -> None:
