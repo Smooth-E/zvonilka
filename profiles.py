@@ -2,6 +2,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from typing import *
 from copy import copy
+import timetable_calendar as calendar
 import random
 import json
 import os
@@ -172,3 +173,5 @@ def remove(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
 
     _profiles.remove(profile)
     _save_profiles()
+
+    calendar.notify_profile_removal(profile['id'])
