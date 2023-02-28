@@ -13,10 +13,15 @@ application = QApplication(sys.argv)
 window = QWidget()
 style = window.style()
 
-timetable_section: QHBoxLayout
-calendar_section: QWidget
-settings_section: QWidget
-immediate_section: QWidget
+timetable_section: QHBoxLayout = None
+
+calendar_section: QWidget = None
+
+settings_section: QWidget = None
+
+immediate_section: QWidget = None
+immediate_melody_line_edit: QLineEdit = None
+
 
 def create_section_frame() -> QFrame:
     frame = QFrame()
@@ -26,12 +31,17 @@ def create_section_frame() -> QFrame:
 
 def create_calendar_section() -> QWidget:
     frame = create_section_frame()
-    QVBoxLayout(frame)
+    layout = QHBoxLayout(frame)
+    layout.setContentsMargins(0, 0, 0, 0)
+    calendar = QCalendarWidget()
+    calendar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+    layout.addWidget(calendar)
     return frame
 
 
 def on_default_melody_path_edited(new_path: str) -> None:
     application_settings.settings['default_melody'] = new_path
+    application_settings.save_settings()
 
 
 def play_default_melody() -> None:
@@ -39,18 +49,41 @@ def play_default_melody() -> None:
     play_sound(melody)
 
 
+def pick_default_melody() -> None:
+    global immediate_melody_line_edit
+
+    file_name = QFileDialog.getOpenFileName(caption='Выберите мелодию звонка по умолчанию', filter='*.wav')[0]
+
+    if file_name == '':
+        return
+    
+    application_settings.settings['default_melody'] = file_name
+    application_settings.save_settings()
+    immediate_melody_line_edit.setText(file_name)
+
+
 def create_immediate_section() -> QWidget:
+    global immediate_melody_line_edit
+
     frame = create_section_frame()
     layout = QVBoxLayout(frame)
     
+    top_bar_layout = QHBoxLayout()
+
     label = QLabel('Мелодия для проигрывания:')
     label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-    layout.addWidget(label)
+
+    button_pick = QPushButton(icon=style.standardIcon(QStyle.StandardPixmap.SP_FileIcon))
+    button_pick.clicked.connect(pick_default_melody)
+
+    top_bar_layout.addWidget(label)
+    top_bar_layout.addWidget(button_pick)
+    layout.addLayout(top_bar_layout)
 
     default_melody = application_settings.settings['default_melody']
-    line_edit = QLineEdit(default_melody)
-    line_edit.textEdited.connect(on_default_melody_path_edited)
-    layout.addWidget(line_edit)
+    immediate_melody_line_edit = QLineEdit(default_melody)
+    immediate_melody_line_edit.textEdited.connect(on_default_melody_path_edited)
+    layout.addWidget(immediate_melody_line_edit)
 
     icon = style.standardIcon(QStyle.StandardPixmap.SP_MediaPlay)
     button_play = QPushButton(icon, 'Воспроизвести мелодию звонка')
