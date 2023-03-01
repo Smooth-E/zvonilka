@@ -31,6 +31,13 @@ class ReactiveCalendarWidget(QCalendarWidget):
             return
         
         color: QColor = profile['color']
-        step = min(rect.width(), rect.height()) / 5
-        new_rect = QRectF(rect.left() + step, rect.top() + step, step, step)
-        painter.fillRect(new_rect, color)
+        step = min(rect.width(), rect.height()) / 3
+
+        start_position = QPointF(rect.right() + 1, rect.bottom() + 1)
+
+        path = QPainterPath(start_position)
+        path.lineTo(start_position - QPointF(0, step))
+        path.lineTo(start_position - QPointF(step, 0))
+        path.lineTo(start_position)
+
+        painter.fillPath(path, color)
