@@ -1,12 +1,14 @@
-from PyQt6.QtWidgets import *
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
-from typing import *
 import timetable_calendar as calendar
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from typing import *
 import profiles
 import datetime
 
+
 class ReactiveCalendarWidget(QCalendarWidget):
+
 
     def __init__(self, *args) -> None:
         QCalendar.__init__(self, *args)
@@ -29,4 +31,6 @@ class ReactiveCalendarWidget(QCalendarWidget):
             return
         
         color: QColor = profile['color']
-        painter.fillRect(rect, color)
+        step = min(rect.width(), rect.height()) / 5
+        new_rect = QRectF(rect.left() + step, rect.top() + step, step, step)
+        painter.fillRect(new_rect, color)

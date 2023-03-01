@@ -1,6 +1,6 @@
 from PyQt6.QtCore import *
-from typing import *
 from copy import copy
+from typing import *
 import json
 import os
 

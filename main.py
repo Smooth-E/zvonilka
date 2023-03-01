@@ -1,8 +1,8 @@
-from PyQt6.QtWidgets import *
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
-from PyQt6.QtMultimedia import *
 from playsound import playsound as play_sound
+from PyQt6.QtMultimedia import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 from widgets import *
 import settings
 import sys
@@ -37,8 +37,10 @@ def create_calendar_section() -> QWidget:
     frame = create_section_frame()
 
     calendar = ReactiveCalendarWidget()
+    calendar.setGridVisible(True)
     calendar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
     calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
+    calendar.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
     calendar.selectionChanged.connect(lambda: on_calendar_selection_changed(calendar))
     
     layout = QHBoxLayout(frame)
