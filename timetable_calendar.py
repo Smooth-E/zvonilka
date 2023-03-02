@@ -53,19 +53,19 @@ def _load_calendar() -> None:
         _calendar[new_key] = value
 
 
-def set_profile(date: QDate, profile: int) -> None:
+def set_profile(date: QDate, profile_id: int) -> None:
     global _calendar
     _load_calendar()
 
-    _calendar[date] = profile
+    _calendar[date] = profile_id
     _save_calendar()
 
 
-def notify_profile_removal(id: int):
+def notify_profile_removal(profile_id: int):
     global _calendar
     _load_calendar()
 
-    _calendar = {key:value for key, value in _calendar if value != id}
+    _calendar = {key:value for key, value in _calendar if value != profile_id}
     _save_calendar()
 
 

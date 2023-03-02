@@ -7,6 +7,18 @@ import profiles
 import datetime
 
 
+def create_section_frame() -> QFrame:
+    frame = QFrame()
+    frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
+    return frame
+
+
+def create_spacer() -> QWidget:
+    spacer = QWidget()
+    spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+    return spacer
+
+
 class ReactiveCalendarWidget(QCalendarWidget):
 
 
