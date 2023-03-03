@@ -76,7 +76,7 @@ def serialize_timetable(timetable: Dict[QTime, str]) -> Dict[str, str]:
     new_timetable = { }
 
     for key, value in timetable.items():
-        new_key = f'{key.hour}:{key.minute}'
+        new_key = f'{key.hour()}:{key.minute()}'
         new_timetable[new_key] = value
 
     return new_timetable
@@ -95,10 +95,12 @@ def _load_profiles() -> None:
         return
     
     try:
-        file = open(_file_path, 'r')
+        file = open(_file_path, 'r', encoding='utf-8')
         loaded_profiles = json.load(file)
         file.close()
-    except Exception:
+    except Exception as exception:
+        print('Ошибка загрузки файла профилей!')
+        print(exception.with_traceback(None))
         return
     
     # Конвертация из формата хранения в формат объект
@@ -120,17 +122,17 @@ def _save_profiles() -> None:
         serialized = {  }
         serialized['id'] = profile['id']
         serialized['name'] = profile['name']
-        serialized['color'] = profile['color'].value
+        serialized['color'] = profile['color'].value()
         serialized['timetable'] = serialize_timetable(profile['timetable'])
         serialized_profiles.append(serialized)
 
     try:
         file = open(_file_path, 'w+')
-        json.dump(_profiles, file)
+        json.dump(serialized_profiles, file, ensure_ascii=False, sort_keys=True, indent=4)
         file.close()
     except Exception as exception:
         print('Ошибкам сохранения профилей!')
-        print(exception.with_traceback())
+        print(exception.with_traceback(None))
 
 
 def add_profile(name: str, color: QColor, timetable: Dict[QTime, str]) -> None:

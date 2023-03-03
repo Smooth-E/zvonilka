@@ -27,21 +27,35 @@ def create_profile(date: QDate) -> None:
     pass
 
 
+def delete_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
+    profiles.remove(profile)
+
+
 def create_profile_entry(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
     global _style
 
+    object_name = 'ProfileEntryTopParent'
+    highlight_color = QApplication.palette().base().color().name()
+    stylesheet = f"""
+    QWidget#{object_name}:hover {{ 
+        background-color: {highlight_color}; 
+    }}
+    """
+
     widget = QWidget()
+    widget.setObjectName(object_name)
+    widget.setStyleSheet(stylesheet)
+    widget.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
     layout = QHBoxLayout(widget)
-    layout.setContentsMargins(0, 0, 0, 0)
 
     indicator = QWidget()
+    indicator.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+    indicator.setFixedWidth(2)
     indicator.setAutoFillBackground(True)
     palette = indicator.palette()
     palette.setColor(indicator.backgroundRole(), profile['color'])
     indicator.setPalette(palette)
-    indicator.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-    indicator.setFixedWidth(2)
     layout.addWidget(indicator)
 
     label = QLabel(profile['name'])
@@ -49,12 +63,9 @@ def create_profile_entry(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]
     layout.addWidget(label)
 
     icon_delete = _style.standardIcon(QStyle.StandardPixmap.SP_DialogDiscardButton)
-    button_delete = QPushButton(icon=icon_delete)
+    button_delete = AmazingPushButton(icon=icon_delete)
+    button_delete.clicked.connect(lambda: delete_profile(profile))
     layout.addWidget(button_delete)
-
-    icon_use = _style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton)
-    button_use = QPushButton(icon=icon_use)
-    layout.addWidget(button_use)
 
     return widget
 
@@ -74,7 +85,7 @@ def no_profile(date: QDate) -> None:
 
         icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
         text = "Создать профиль"
-        button = QPushButton(icon, text)
+        button = AmazingPushButton(icon, text)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
         button.clicked.connect(create_profile)
         _parent_layout.addWidget(button)
@@ -99,6 +110,8 @@ def no_profile(date: QDate) -> None:
 
         list_widget = QWidget()
         list_layout = QVBoxLayout(list_widget)
+        list_layout.setContentsMargins(0, 0, 0, 0)
+        list_layout.setSpacing(0)
 
         for profile in profiles.get_all():
             list_layout.addWidget(create_profile_entry(profile, date))
@@ -117,7 +130,7 @@ def no_profile(date: QDate) -> None:
         helper_layout = QVBoxLayout(helper_widget)
         icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
         text = 'Создать новый профиль'
-        button_create_profile = QPushButton(icon=icon, text=text)
+        button_create_profile = AmazingPushButton(icon=icon, text=text)
         helper_layout.addWidget(button_create_profile)
         _parent_layout.addWidget(helper_widget)
 

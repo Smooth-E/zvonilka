@@ -1,6 +1,6 @@
-from widgets import create_section_frame
 from playsound import playsound
 from PyQt6.QtWidgets import *
+from widgets import *
 import settings
 
 
@@ -41,7 +41,7 @@ def create(style: QStyle) -> QWidget:
     label = QLabel('Мелодия для проигрывания:')
     label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-    button_pick = QPushButton(icon=style.standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
+    button_pick = AmazingPushButton(icon=style.standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
     button_pick.clicked.connect(_pick_default_melody)
 
     top_bar_layout.addWidget(label)
@@ -54,7 +54,7 @@ def create(style: QStyle) -> QWidget:
     layout.addWidget(_melody_line_edit)
 
     icon = style.standardIcon(QStyle.StandardPixmap.SP_MediaPlay)
-    button_play = QPushButton(icon, 'Воспроизвести мелодию')
+    button_play = AmazingPushButton(icon, 'Воспроизвести мелодию')
     button_play.clicked.connect(_play_default_melody)
     layout.addWidget(button_play)
 

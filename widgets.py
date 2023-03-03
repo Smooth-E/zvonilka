@@ -67,3 +67,25 @@ class VerticalScrollArea(QScrollArea):
         self.setMinimumWidth(width)
 
         return super().resizeEvent(event)
+
+
+class AmazingPushButton(QPushButton):
+
+
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
+        super().__init__(parent)
+        self.post_init()
+    
+
+    def __init__(self, text: str = None, parent: Optional[QWidget] = None) -> None:
+        super().__init__(text, parent)
+        self.post_init()
+    
+
+    def __init__(self, icon: QIcon = None, text: str = None, parent: Optional[QWidget] = None) -> None:
+        super().__init__(icon, text, parent)
+        self.post_init()
+    
+
+    def post_init(self):
+        self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))

@@ -20,7 +20,7 @@ def _deserialize_settings(dictionary: dict) -> None:
 
 def load_settings() -> None:
     try:
-        file = open(_file_path, 'r')
+        file = open(_file_path, 'r', encoding='utf-8')
         data = file.read()
         dictionary = json.loads(data)
         _deserialize_settings(dictionary)

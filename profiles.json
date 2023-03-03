@@ -1,18 +1,8 @@
 [
     {
+        "color": 252,
         "id": 123,
         "name": "Тестовый профиль",
-        "color": 16548625,
-        "timetable": {
-            "11:55": "melody.wav",
-            "11:56": "melody.wav",
-            "11:57": "melody.wav"
-        }
-    },
-    {
-        "id": 1234,
-        "name": "Тестовый профиль 2",
-        "color": 286457,
         "timetable": {
             "11:55": "melody.wav",
             "11:56": "melody.wav",

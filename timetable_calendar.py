@@ -20,11 +20,11 @@ def _save_calendar() -> None:
 
     try:
         file = open(_file_path, 'w+')
-        json.dump(serialized_calendar, file)
+        json.dump(serialized_calendar, file, ensure_ascii=False, indent=4, sort_keys=True)
         file.close()
     except Exception as exception:
         print('Ошибка сохранения календаря!')
-        print(exception.with_traceback())
+        print(exception.with_traceback(None))
 
 
 def _load_calendar() -> None:
@@ -40,7 +40,7 @@ def _load_calendar() -> None:
         return
     
     try:
-        file = open(_file_path, 'r')
+        file = open(_file_path, 'r', encoding='utf-8')
         raw_calendar = json.load(file)
         file.close()
     except Exception as exception:
@@ -65,7 +65,7 @@ def notify_profile_removal(profile_id: int):
     global _calendar
     _load_calendar()
 
-    _calendar = {key:value for key, value in _calendar if value != profile_id}
+    _calendar = {key: value for key, value in _calendar.items() if value != profile_id}
     _save_calendar()
 
 
