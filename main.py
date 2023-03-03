@@ -62,6 +62,7 @@ def initialize_app() -> None:
     window.setLayout(base_layout)
 
     window.resize(1920 // 2, 1080 // 2)
+    # window.resize(window.minimumSizeHint())
 
     rectangle = window.frameGeometry()
     center = QGuiApplication.primaryScreen().availableGeometry().center()

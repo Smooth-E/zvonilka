@@ -57,9 +57,13 @@ class ReactiveCalendarWidget(QCalendarWidget):
 
 class VerticalScrollArea(QScrollArea):
 
-    def resizeEvent(self, a0: QResizeEvent) -> None:
-        widget_width = self.widget().minimumSizeHint().width()
-        scrollbar_width = self.verticalScrollBar().width()
-        self.setMinimumWidth(widget_width + scrollbar_width)
 
-        return super().resizeEvent(a0)
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        width = self.widget().minimumSizeHint().width()
+
+        if self.verticalScrollBar().isVisible():
+            width += self.verticalScrollBar().width()
+        
+        self.setMinimumWidth(width)
+
+        return super().resizeEvent(event)

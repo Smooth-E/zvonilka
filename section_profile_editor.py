@@ -33,6 +33,7 @@ def create_profile_entry(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]
     widget = QWidget()
 
     layout = QHBoxLayout(widget)
+    layout.setContentsMargins(0, 0, 0, 0)
 
     indicator = QWidget()
     indicator.setAutoFillBackground(True)
@@ -88,7 +89,7 @@ def no_profile(date: QDate) -> None:
         header = QLabel(header_text)
         header.setTextFormat(Qt.TextFormat.MarkdownText)
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        header.setStyleSheet('padding: 4')
+        header.setContentsMargins(4, 4, 4, 4)
         header.setAutoFillBackground(True)
         header_palette = header.palette()
         header_palette.setColor(header.backgroundRole(), QApplication.palette().highlight().color())
@@ -99,6 +100,11 @@ def no_profile(date: QDate) -> None:
         list_widget = QWidget()
         list_layout = QVBoxLayout(list_widget)
 
+        for profile in profiles.get_all():
+            list_layout.addWidget(create_profile_entry(profile, date))
+        
+        list_layout.addWidget(create_spacer())
+
         scroll_area = VerticalScrollArea()
         scroll_area.setWidget(list_widget)
         scroll_area.setWidgetResizable(True)
@@ -107,10 +113,13 @@ def no_profile(date: QDate) -> None:
         scroll_area.setFrameShape(QFrame.Shape.NoFrame)
         _parent_layout.addWidget(scroll_area)
 
-        for profile in profiles.get_all():
-            list_layout.addWidget(create_profile_entry(profile, date))
-        
-        list_layout.addWidget(create_spacer())
+        helper_widget = QWidget()
+        helper_layout = QVBoxLayout(helper_widget)
+        icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
+        text = 'Создать новый профиль'
+        button_create_profile = QPushButton(icon=icon, text=text)
+        helper_layout.addWidget(button_create_profile)
+        _parent_layout.addWidget(helper_widget)
 
 
 def reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
