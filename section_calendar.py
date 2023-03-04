@@ -1,7 +1,9 @@
 from PyQt6.QtWidgets import *
 from widgets import *
 import section_profile_editor
-import datetime
+
+
+_calendar: ReactiveCalendarWidget
 
 
 def _on_selection_changed(calendar: ReactiveCalendarWidget) -> None:
@@ -10,25 +12,28 @@ def _on_selection_changed(calendar: ReactiveCalendarWidget) -> None:
     section_profile_editor.update(profile_id, selected_date)
  
 
+def reselect_date() -> None:
+    global _calendar
+    _on_selection_changed(_calendar)
+
+
 def create() -> QWidget:
+    global _calendar
+
     frame = create_section_frame()
 
-    calendar = ReactiveCalendarWidget()
-    calendar.setGridVisible(True)
-    calendar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-    calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
-    calendar.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
-    calendar.selectionChanged.connect(lambda: _on_selection_changed(calendar))
+    _calendar = ReactiveCalendarWidget()
+    _calendar.setGridVisible(True)
+    _calendar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+    _calendar.setSelectionMode(QCalendarWidget.SelectionMode.SingleSelection)
+    _calendar.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
+    _calendar.selectionChanged.connect(lambda: _on_selection_changed(_calendar))
 
     # Это спровоцирует отображения редактора профилей
-    today_datetime = datetime.date.today()
-    today = QDate(today_datetime.year, today_datetime.month, today_datetime.day)
-    tomorrow = today.addDays(1)
-    calendar.setSelectedDate(tomorrow)
-    calendar.setSelectedDate(today)
+    reselect_date()
     
     layout = QHBoxLayout(frame)
     layout.setContentsMargins(0, 0, 0, 0)
-    layout.addWidget(calendar)
+    layout.addWidget(_calendar)
 
     return frame

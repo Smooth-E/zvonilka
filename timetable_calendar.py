@@ -61,11 +61,12 @@ def set_profile(date: QDate, profile_id: int) -> None:
     _save_calendar()
 
 
-def notify_profile_removal(profile_id: int):
+def notify_profile_removal(profile_id: int) -> None:
     global _calendar
     _load_calendar()
 
     _calendar = {key: value for key, value in _calendar.items() if value != profile_id}
+
     _save_calendar()
 
 

@@ -9,8 +9,8 @@ import json
 
 
 def main():
-    profile_count = 1024
-    days_ahead = 1024
+    profile_count = 50
+    days_ahead = 1000
     
     calendar = open('calendar.json', 'w+', encoding='utf-8')
     profiles = open('profiles.json', 'w+', encoding='utf-8')
@@ -18,7 +18,7 @@ def main():
     profiles_array = [ ]
     calendar_dict = { }
 
-    for i in range(profile_count):
+    for i in range(profile_count + 1):
         profile = {
             'id': i,
             'name': f'Тестовый профиль {i}',
@@ -35,9 +35,9 @@ def main():
         
         profiles_array.append(profile)
 
-    date = datetime.datetime.now()
+    date = datetime.datetime.now() + datetime.timedelta(days=1)
     for _ in range(days_ahead):
-        calendar_dict[f'{date.year}.{date.month}.{date.day}'] = randint(0, len(profiles_array))
+        calendar_dict[f'{date.year}.{date.month}.{date.day}'] = randint(0, profile_count)
         date += datetime.timedelta(days=1)
 
     json.dump(profiles_array, profiles, indent=4, ensure_ascii=False)

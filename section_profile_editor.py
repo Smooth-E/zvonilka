@@ -4,7 +4,7 @@ import profiles
 from typing import *
 from PyQt6.QtGui import *
 from widgets import *
-import timetable_calendar as calendar
+import section_calendar
 
 
 _parent_layout: QLayout
@@ -29,6 +29,7 @@ def create_profile(date: QDate) -> None:
 
 def delete_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
     profiles.remove(profile)
+    section_calendar.reselect_date()
 
 
 def create_profile_entry(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
