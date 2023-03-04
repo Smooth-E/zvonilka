@@ -13,10 +13,10 @@ def _on_selection_changed(calendar: ReactiveCalendarWidget) -> None:
     section_profile_editor.update(profile_id, selected_date)
  
 
-def reselect_date() -> None:
+def update() -> None:
     global _calendar
     _on_selection_changed(_calendar)
-    _calendar.updateCell(_calendar.selectedDate())
+    _calendar.updateCells()
 
 
 def create() -> QWidget:
@@ -32,7 +32,7 @@ def create() -> QWidget:
     _calendar.selectionChanged.connect(lambda: _on_selection_changed(_calendar))
 
     # Это спровоцирует отображения редактора профилей
-    reselect_date()
+    update()
     
     layout = QHBoxLayout(frame)
     layout.setContentsMargins(0, 0, 0, 0)

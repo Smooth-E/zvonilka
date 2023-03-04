@@ -24,17 +24,14 @@ def initialize(parent_layout: QVBoxLayout, application_style: QStyle) -> None:
     _style = application_style
 
 
-def _create_profile(date: QDate) -> None:
-    pass
-
-
 def _delete_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
     profiles.remove(profile)
-    section_calendar.reselect_date()
+    section_calendar.update()
+
 
 def _select_profile(date: QDate, profile_id: int) -> None:
     timetable_calendar.set_profile(date, profile_id)
-    section_calendar.reselect_date()
+    section_calendar.update()
 
 
 def _create_profile(date: QDate) -> None:
@@ -44,7 +41,7 @@ def _create_profile(date: QDate) -> None:
         { QTime(7, 0, 0, 0): 'melody.wav' }
     )
     timetable_calendar.set_profile(date, profile_id)
-    section_calendar.reselect_date()
+    section_calendar.update()
 
 
 def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
@@ -104,7 +101,7 @@ def _no_profile(date: QDate) -> None:
         text = "Создать профиль"
         button = QPushButton(icon, text)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        button.clicked.connect(_create_profile)
+        button.clicked.connect(lambda: _create_profile(date))
         _parent_layout.addWidget(button)
         _parent_layout.setAlignment(button, Qt.AlignmentFlag.AlignCenter)
 
@@ -113,7 +110,7 @@ def _no_profile(date: QDate) -> None:
         _parent_layout.setContentsMargins(0, 0, 0, 0)
         _parent_layout.setSpacing(0)
 
-        header_text = '**Список профилей**'
+        header_text = '**Выберите профиль**'
         header = QLabel(header_text)
         header.setTextFormat(Qt.TextFormat.MarkdownText)
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
