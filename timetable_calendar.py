@@ -15,7 +15,7 @@ def _save_calendar() -> None:
 
     serialized_calendar = { }
     for key, value in _calendar.items():
-        new_key = f'{key.year}.{key.month}.{key.day}'
+        new_key = f'{key.year()}.{key.month()}.{key.day()}'
         serialized_calendar[new_key] = value
 
     try:
