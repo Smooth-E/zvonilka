@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import *
 from widgets import *
 import section_profile_editor
+import timetable_calendar
 
 
 _calendar: ReactiveCalendarWidget
@@ -8,7 +9,7 @@ _calendar: ReactiveCalendarWidget
 
 def _on_selection_changed(calendar: ReactiveCalendarWidget) -> None:
     selected_date = calendar.selectedDate()
-    profile_id = calendar.timetable_calendar.get(selected_date)
+    profile_id = timetable_calendar.get_profile_id(selected_date)
     section_profile_editor.update(profile_id, selected_date)
  
 

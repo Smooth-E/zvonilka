@@ -74,3 +74,9 @@ def get_calendar() -> Dict[QDate, int]:
     global _calendar
     _load_calendar()
     return copy(_calendar)
+
+
+def get_profile_id(date: QDate) -> Union[int, None]:
+    global _calendar
+    _load_calendar()
+    return _calendar.get(date)

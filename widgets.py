@@ -1,6 +1,6 @@
-import timetable_calendar as calendar
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
+import timetable_calendar
 from PyQt6.QtGui import *
 from typing import *
 import profiles
@@ -22,16 +22,10 @@ def create_spacer() -> QWidget:
 class ReactiveCalendarWidget(QCalendarWidget):
 
 
-    def __init__(self, *args) -> None:
-        QCalendar.__init__(self, *args)
-
-        self.timetable_calendar = calendar.get_calendar()
-
-
     def paintCell(self, painter: QPainter, rect: QRect, date: Union[QDate, datetime.date]) -> None:
         super().paintCell(painter, rect, date)
 
-        profile_id = self.timetable_calendar.get(date)
+        profile_id = timetable_calendar.get_profile_id(date)
 
         if profile_id == None:
             return
@@ -69,23 +63,15 @@ class VerticalScrollArea(QScrollArea):
         return super().resizeEvent(event)
 
 
-class AmazingPushButton(QPushButton):
+class ClickableQWidget(QWidget):
 
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
-        super().__init__(parent)
-        self.post_init()
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        if self.click_callback is not None:
+            self.click_callback()
+        
+        return super().mousePressEvent(event)
     
 
-    def __init__(self, text: str = None, parent: Optional[QWidget] = None) -> None:
-        super().__init__(text, parent)
-        self.post_init()
-    
-
-    def __init__(self, icon: QIcon = None, text: str = None, parent: Optional[QWidget] = None) -> None:
-        super().__init__(icon, text, parent)
-        self.post_init()
-    
-
-    def post_init(self):
-        self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+    def setClickCallback(self, callback: Callable[[], Any]):
+        self.click_callback = callback
