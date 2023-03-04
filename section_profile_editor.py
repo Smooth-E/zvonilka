@@ -37,6 +37,16 @@ def _select_profile(date: QDate, profile_id: int) -> None:
     section_calendar.reselect_date()
 
 
+def _create_profile(date: QDate) -> None:
+    profile_id = profiles.add_profile(
+        'Безымянный профиль', 
+        QColor.fromString('#3F3F3F'),
+        { QTime(7, 0, 0, 0): 'melody.wav' }
+    )
+    timetable_calendar.set_profile(date, profile_id)
+    section_calendar.reselect_date()
+
+
 def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
     global _style
 
@@ -138,6 +148,7 @@ def _no_profile(date: QDate) -> None:
         icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
         text = 'Создать новый профиль'
         button_create_profile = QPushButton(icon=icon, text=text)
+        button_create_profile.clicked.connect(lambda: _create_profile(date))
         helper_layout.addWidget(button_create_profile)
         _parent_layout.addWidget(helper_widget)
 

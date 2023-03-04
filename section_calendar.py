@@ -16,6 +16,7 @@ def _on_selection_changed(calendar: ReactiveCalendarWidget) -> None:
 def reselect_date() -> None:
     global _calendar
     _on_selection_changed(_calendar)
+    _calendar.updateCell(_calendar.selectedDate())
 
 
 def create() -> QWidget:

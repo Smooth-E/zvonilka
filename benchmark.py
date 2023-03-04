@@ -9,8 +9,8 @@ import json
 
 
 def main():
-    profile_count = 50
-    days_ahead = 1000
+    profile_count = 3
+    days_ahead = 10
     
     calendar = open('calendar.json', 'w+', encoding='utf-8')
     profiles = open('profiles.json', 'w+', encoding='utf-8')

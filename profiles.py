@@ -135,20 +135,23 @@ def _save_profiles() -> None:
         print(exception.with_traceback(None))
 
 
-def add_profile(name: str, color: QColor, timetable: Dict[QTime, str]) -> None:
+def add_profile(name: str, color: QColor, timetable: Dict[QTime, str]) -> int:
     global _profiles
     _load_profiles()
 
     color.setAlpha(255)
+    profile_id = _generate_unique_id()
     profile = {
-        'id': _generate_unique_id(),
+        'id': profile_id,
         'name': name,
         'color': color,
         'timetable': timetable
     }
-
     _profiles.append(profile)
+
     _save_profiles()
+
+    return profile_id
 
 
 def get_all() -> List[Dict[str, Union[str, QColor, Dict[QTime, str]]]]:
