@@ -5,6 +5,7 @@ from PyQt6.QtGui import *
 from typing import *
 import profiles
 import datetime
+import random
 
 
 def create_section_frame() -> QFrame:
@@ -17,6 +18,19 @@ def create_spacer() -> QWidget:
     spacer = QWidget()
     spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
     return spacer
+
+
+def create_header(text: str) -> QWidget:
+    header = QLabel(text)
+    header.setTextFormat(Qt.TextFormat.MarkdownText)
+    header.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    header.setContentsMargins(4, 4, 4, 4)
+    header.setAutoFillBackground(True)
+    header_palette = header.palette()
+    header_palette.setColor(header.backgroundRole(), QApplication.palette().highlight().color())
+    header_palette.setColor(header.foregroundRole(), QApplication.palette().highlightedText().color())
+    header.setPalette(header_palette)
+    return header
 
 
 class ReactiveCalendarWidget(QCalendarWidget):
@@ -65,7 +79,6 @@ class VerticalScrollArea(QScrollArea):
 
 class ClickableQWidget(QWidget):
 
-
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if self.click_callback is not None:
             self.click_callback()
@@ -75,3 +88,23 @@ class ClickableQWidget(QWidget):
 
     def setClickCallback(self, callback: Callable[[], Any]):
         self.click_callback = callback
+
+
+
+def create_highlightable_widget(unique_name: str = str(random.randint(0, 1024))) -> ClickableQWidget:
+    unique_name = unique_name.replace(' ', '-')
+    unique_name = unique_name.replace('.', '-dot-')
+    unique_name = unique_name.replace(',', '-comma-')
+    object_name = 'ClickableQWidget'
+
+    highlight_color = QApplication.palette().base().color().name()
+
+    stylesheet = f'ClickableQWidget:hover {{ background-color: {highlight_color}; }}'
+
+    widget = ClickableQWidget()
+    widget.setObjectName(object_name)
+    widget.setAccessibleName(object_name)
+    widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+    widget.setStyleSheet(stylesheet)
+    # widget.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+    return widget

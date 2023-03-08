@@ -47,18 +47,8 @@ def _create_profile(date: QDate) -> None:
 def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
     global _style
 
-    object_name = 'ProfileEntryTopParent'
-    highlight_color = QApplication.palette().base().color().name()
-    stylesheet = f"""
-    QWidget#{object_name}:hover {{ 
-        background-color: {highlight_color}; 
-    }}
-    """
-
-    widget = ClickableQWidget()
-    widget.setObjectName(object_name)
-    widget.setStyleSheet(stylesheet)
-    widget.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+    widget = create_highlightable_widget(profile['name'])
+    widget: QPushButton
     widget.setClickCallback(lambda: _select_profile(date, profile['id']))
 
     layout = QHBoxLayout(widget)
@@ -110,17 +100,7 @@ def _no_profile(date: QDate) -> None:
         _parent_layout.setContentsMargins(0, 0, 0, 0)
         _parent_layout.setSpacing(0)
 
-        header_text = '**Выберите профиль**'
-        header = QLabel(header_text)
-        header.setTextFormat(Qt.TextFormat.MarkdownText)
-        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        header.setContentsMargins(4, 4, 4, 4)
-        header.setAutoFillBackground(True)
-        header_palette = header.palette()
-        header_palette.setColor(header.backgroundRole(), QApplication.palette().highlight().color())
-        header_palette.setColor(header.foregroundRole(), QApplication.palette().highlightedText().color())
-        header.setPalette(header_palette)
-        _parent_layout.addWidget(header)
+        _parent_layout.addWidget(create_header('**Выберите профиль**'))
 
         list_widget = QWidget()
         list_layout = QVBoxLayout(list_widget)
@@ -150,8 +130,56 @@ def _no_profile(date: QDate) -> None:
         _parent_layout.addWidget(helper_widget)
 
 
-def _reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
+def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
     pass
+
+
+def _create_timetable_entry_widget(time: QTime, melody_name: str) -> QWidget:
+    frame = create_section_frame()
+    layout = QHBoxLayout(frame)
+    return frame
+
+
+def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
+    widget = create_section_frame()
+
+    layout = QVBoxLayout(widget)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(0)
+    layout.addWidget(create_header('**Расписание**'))
+
+    list_widget = QWidget()
+    list_layout = QVBoxLayout(list_widget)
+
+    for time, melody_name in profile['timetable'].items():
+        list_layout.addWidget(_create_timetable_entry_widget(time, melody_name))
+    
+    layout.addWidget(list_widget)
+
+    return widget
+
+
+def _reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
+    global _parent_layout
+
+    _parent_layout.setContentsMargins(0, 0, 0, 0)
+    _parent_layout.setSpacing(0)
+
+    _parent_layout.addWidget(create_header('**Настройка профиля**'))
+
+    list_widget = QWidget()
+    list_layout = QVBoxLayout(list_widget)
+    list_layout.addWidget(_create_profile_info_widget(profile))
+    list_layout.addWidget(_create_timetable_widget(profile))
+    list_layout.addWidget(create_spacer())
+
+    scroll_area = VerticalScrollArea()
+    scroll_area.setWidget(list_widget)
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+    scroll_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+    scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+    _parent_layout.addWidget(scroll_area)
 
 
 def update(profile_id: int, date: QDate) -> None:
