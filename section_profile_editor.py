@@ -132,7 +132,48 @@ def _no_profile(date: QDate) -> None:
 
 
 def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
-    pass
+    widget = SectionFrame()
+
+    layout = QVBoxLayout(widget)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(0)
+    
+    layout.addWidget(Header('**Свойства профиля**', profile['color']))
+
+    child_widget = QWidget()
+    child_layout = QGridLayout(child_widget)
+
+    description_profile_name = QLabel(text='Имя:')
+    description_profile_name.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter)
+    child_layout.addWidget(description_profile_name, 0, 0)
+
+    profile_name_edit = QLineEdit(profile['name'])
+    profile_name_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    child_layout.addWidget(profile_name_edit, 0, 1)
+
+    description_profile_color = QLabel(text='Цвет:')
+    description_profile_color.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
+    child_layout.addWidget(description_profile_color, 1, 0)
+
+    change_color_button = QPushButton('something')
+
+    change_color_helper_layout = QHBoxLayout(change_color_button)
+    change_color_helper_layout.setContentsMargins(4, 4, 4, 4)
+
+    color_name = profile['color'].name()
+    print(color_name)
+
+    color_swatch = QWidget()
+    color_swatch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+    color_swatch.setAutoFillBackground(True)
+    color_swatch.setStyleSheet(f'background-color: {color_name}')
+
+    change_color_helper_layout.addWidget(color_swatch)
+    child_layout.addWidget(change_color_button, 1, 1)
+
+    layout.addWidget(child_widget)
+
+    return widget
 
 
 def _on_edit_melody_name(

@@ -27,6 +27,13 @@ class Spacer(QWidget):
 class Header(QLabel):
     
 
+    def _get_text_color(self, value_float: float) -> QColor:
+        if value_float > 0.5:
+            return QColor('#000')
+        else:
+            return QColor('#FFF')
+
+
     def __init__(self, text: str = '', color: QColor = None) -> None:
         super().__init__(text)
         self.setTextFormat(Qt.TextFormat.MarkdownText)
@@ -41,14 +48,7 @@ class Header(QLabel):
             the_palette.setColor(self.foregroundRole(), QApplication.palette().highlightedText().color())
         else:
             the_palette.setColor(self.backgroundRole(), color)
-
-            print(color.valueF())
-            if color.valueF() > 0.5:
-                text_color = QColor('#000')
-            else:
-                text_color = QColor('#FFF')
-            
-            the_palette.setColor(self.foregroundRole(), text_color)
+            the_palette.setColor(self.foregroundRole(), self._get_text_color(color.valueF()))
         
         self.setPalette(the_palette)
 
