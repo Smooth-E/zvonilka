@@ -167,6 +167,15 @@ def _on_edit_time(
     melody_edit.disconnect_on_text_changed()
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(new_time, profile_id, melody_edit))
 
+
+def _delete_alarm(widget: QWidget, profile_id: int, time: QTime) -> None:
+    profile = profiles.get(profile_id)
+    new_profile = copy(profile)
+    del(new_profile['timetable'][time])
+    profiles.replace(profile, new_profile)
+    widget.setParent(None)
+
+
 def _pick_alarm_melody(line_edit: DisconnectableLineEdit) -> None:
     file_name = QFileDialog.getOpenFileName(caption='Выберите мелодию звонка', filter='*.wav')[0]
 
@@ -181,6 +190,8 @@ def _create_timetable_entry_widget(
     melody_name: str, 
     profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
 ) -> QWidget:
+    global _style
+
     widget = HighlightableWidget()
 
     layout = QGridLayout(widget)
@@ -193,8 +204,14 @@ def _create_timetable_entry_widget(
     time_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
     time_edit.connect_on_time_changed(lambda: _on_edit_time(time, profile['id'], time_edit, melody_edit))
 
-    layout.addWidget(time_edit, 0, 0, 1, 2)
+    layout.addWidget(time_edit, 0, 0)
     layout.addWidget(melody_edit, 1, 0)
+
+    delete_alarm_button = QPushButton()
+    delete_alarm_button.setIcon(_style.standardIcon(QStyle.StandardPixmap.SP_TrashIcon))
+    delete_alarm_button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+    delete_alarm_button.clicked.connect(lambda: _delete_alarm(widget, profile['id'], time))
+    layout.addWidget(delete_alarm_button, 0, 1)
 
     pick_melody_button = QPushButton()
     pick_melody_button.setIcon(_style.standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
@@ -207,8 +224,15 @@ def _create_timetable_entry_widget(
 
 def _add_alarm(profile_id: int, layout: QLayout) -> None:
     old_profile = profiles.get(profile_id)
-    last_alarm = list(old_profile['timetable'].keys())[-1]
-    melody_name = old_profile['timetable'][last_alarm]
+
+    keys = list(old_profile['timetable'].keys())
+    if len(keys) == 0:
+        last_alarm = QTime(6, 59)
+        melody_name = 'melody.wav'
+    else:
+        last_alarm = keys[-1]
+        melody_name = old_profile['timetable'][last_alarm]
+    
     last_alarm = last_alarm.addSecs(60)
     
     new_profile = copy(old_profile)
