@@ -122,12 +122,12 @@ def _save_profiles() -> None:
         serialized = {  }
         serialized['id'] = profile['id']
         serialized['name'] = profile['name']
-        serialized['color'] = profile['color'].value()
+        serialized['color'] = profile['color'].rgb()
         serialized['timetable'] = serialize_timetable(profile['timetable'])
         serialized_profiles.append(serialized)
 
     try:
-        file = open(_file_path, 'w+')
+        file = open(_file_path, 'w+', encoding='utf-8')
         json.dump(serialized_profiles, file, ensure_ascii=False, sort_keys=True, indent=4)
         file.close()
     except Exception as exception:

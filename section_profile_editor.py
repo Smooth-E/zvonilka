@@ -131,6 +131,28 @@ def _no_profile(date: QDate) -> None:
         _parent_layout.addWidget(helper_widget)
 
 
+def _on_profile_color_selected(profile_id: int, color_dialog: QColorDialog) -> None:
+    profile = profiles.get(profile_id)
+    old_profile = copy(profile)
+    profile['color'] = color_dialog.selectedColor()
+    profiles.replace(old_profile, profile)
+    section_calendar.update()
+
+
+def _on_change_profile_color(profile_id: int) -> None:
+    profile = profiles.get(profile_id)
+    dialog = QColorDialog(profile['color'])
+    dialog.colorSelected.connect(lambda: _on_profile_color_selected(profile_id, dialog))
+    dialog.show()
+
+
+def _on_profile_name_changed(profile_id: int, line_edit: QLineEdit) -> None:
+    profile = profiles.get(profile_id)
+    old_profile = copy(profile)
+    profile['name'] = line_edit.text()
+    profiles.replace(old_profile, profile)
+
+
 def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
     widget = SectionFrame()
 
@@ -149,6 +171,7 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
 
     profile_name_edit = QLineEdit(profile['name'])
     profile_name_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    profile_name_edit.textChanged.connect(lambda: _on_profile_name_changed(profile['id'], profile_name_edit))
     child_layout.addWidget(profile_name_edit, 0, 1)
 
     description_profile_color = QLabel(text='Цвет:')
@@ -156,12 +179,12 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
     child_layout.addWidget(description_profile_color, 1, 0)
 
     change_color_button = QPushButton('something')
+    change_color_button.clicked.connect(lambda: _on_change_profile_color(profile['id']))
 
     change_color_helper_layout = QHBoxLayout(change_color_button)
     change_color_helper_layout.setContentsMargins(4, 4, 4, 4)
 
     color_name = profile['color'].name()
-    print(color_name)
 
     color_swatch = QWidget()
     color_swatch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
