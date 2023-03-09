@@ -1,12 +1,13 @@
 from PyQt6.QtMultimedia import *
+import section_profile_editor
 from PyQt6.QtWidgets import *
+import section_play_melody
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+import section_calendar
 from widgets import *
 import settings
-import section_calendar
-import section_play_melody
-import section_profile_editor
+import notifier
 import sys
 
 
@@ -75,4 +76,5 @@ def initialize_app() -> None:
 
 
 if __name__ == '__main__':
+    notifier.restart()
     initialize_app()
