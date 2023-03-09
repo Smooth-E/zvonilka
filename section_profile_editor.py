@@ -1,11 +1,12 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
-import profiles
-from typing import *
-from PyQt6.QtGui import *
-from widgets import *
-import section_calendar
 import timetable_calendar
+from PyQt6.QtGui import *
+import section_calendar
+from widgets import *
+from typing import *
+import profiles
+from copy import copy
 
 
 _parent_layout: QLayout
@@ -137,7 +138,7 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
 def _on_edit_melody_name(
     time: QTime, 
     profile_id: int,
-    line_edit: QLineEdit
+    line_edit: DisconnectableLineEdit
  ) -> None:
     profile = profiles.get(profile_id)
     old_profile = profile.copy()
@@ -148,16 +149,31 @@ def _on_edit_melody_name(
 def _on_edit_time(
     time: QTime, 
     profile_id: int,
-    time_edit: QTimeEdit
+    time_edit: DisconnectableTimeEdit,
+    melody_edit: DisconnectableLineEdit
 ) -> None:
     profile = profiles.get(profile_id)
     old_profile = profile.copy()
-    profile['timetable'][time_edit.time()] = profile['timetable'][time]
+
+    new_time = time_edit.time()
+    profile['timetable'][new_time] = profile['timetable'][time]
     del(profile['timetable'][time])
+
     profiles.replace(old_profile, profile)
 
-    time_edit.timeChanged.disconnect()
-    time_edit.timeChanged.connect(lambda: _on_edit_time(time_edit.time(), profile_id, time_edit))
+    time_edit.disconnect_on_time_changed()
+    time_edit.connect_on_time_changed(lambda: _on_edit_time(new_time, profile_id, time_edit, melody_edit))
+    
+    melody_edit.disconnect_on_text_changed()
+    melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(new_time, profile_id, melody_edit))
+
+def _pick_alarm_melody(line_edit: DisconnectableLineEdit) -> None:
+    file_name = QFileDialog.getOpenFileName(caption='Выберите мелодию звонка', filter='*.wav')[0]
+
+    if file_name == '':
+        return
+    
+    line_edit.setText(file_name)
 
 
 def _create_timetable_entry_widget(
@@ -169,19 +185,21 @@ def _create_timetable_entry_widget(
 
     layout = QGridLayout(widget)
 
-    time_edit = NotScrollableTimeEdit(time)
-    time_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-    time_edit.timeChanged.connect(lambda: _on_edit_time(time, profile['id'], time_edit))
-    layout.addWidget(time_edit, 0, 0, 1, 2)
-
-    melody_edit = QLineEdit(melody_name)
+    melody_edit = DisconnectableLineEdit(melody_name)
     melody_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-    melody_edit.textChanged.connect(lambda: _on_edit_melody_name(time, profile['id'], melody_edit))
+    melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(time, profile['id'], melody_edit))
+
+    time_edit = DisconnectableTimeEdit(time)
+    time_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    time_edit.connect_on_time_changed(lambda: _on_edit_time(time, profile['id'], time_edit, melody_edit))
+
+    layout.addWidget(time_edit, 0, 0, 1, 2)
     layout.addWidget(melody_edit, 1, 0)
 
     pick_melody_button = QPushButton()
     pick_melody_button.setIcon(_style.standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
     pick_melody_button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+    pick_melody_button.clicked.connect(lambda: _pick_alarm_melody(melody_edit))
     layout.addWidget(pick_melody_button, 1, 1)
 
     return widget

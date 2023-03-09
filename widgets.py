@@ -141,3 +141,38 @@ class NotScrollableTimeEdit(QTimeEdit):
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         return None
+
+
+class DisconnectableTimeEdit(QTimeEdit):
+
+    def __init__(self, time: QTime = QTime(), parent: Union[QWidget, None] = None) -> None:
+        super().__init__(time, parent)
+        self.connected_function = None
+
+
+    def disconnect_on_time_changed(self) -> None:
+        if self.connected_function is not None:
+            self.timeChanged.disconnect(self.connected_function)
+    
+
+    def connect_on_time_changed(self, function) -> None:
+        self.connected_function = function
+        self.timeChanged.connect(function)
+
+
+class DisconnectableLineEdit(QLineEdit):
+
+
+    def __init__(self, contents: str = '', parent: Union[QWidget, None] = None) -> None:
+        super().__init__(contents, parent)
+        self.connected_function = None
+    
+
+    def disconnect_on_text_changed(self) -> None:
+        if self.connected_function is not None:
+            self.textChanged.disconnect(self.connected_function)
+    
+
+    def connect_on_text_changed(self, function) -> None:
+        self.connected_function = function
+        self.textChanged.connect(function)
