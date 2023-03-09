@@ -205,6 +205,19 @@ def _create_timetable_entry_widget(
     return widget
 
 
+def _add_alarm(profile_id: int, layout: QLayout) -> None:
+    old_profile = profiles.get(profile_id)
+    last_alarm = list(old_profile['timetable'].keys())[-1]
+    melody_name = old_profile['timetable'][last_alarm]
+    last_alarm = last_alarm.addSecs(60)
+    
+    new_profile = copy(old_profile)
+    new_profile['timetable'][last_alarm] = melody_name
+    profiles.replace(old_profile, new_profile)
+
+    layout.addWidget(_create_timetable_entry_widget(last_alarm, melody_name, new_profile))
+
+
 def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
     widget = SectionFrame()
 
@@ -213,14 +226,22 @@ def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, s
     layout.setSpacing(0)
     layout.addWidget(Header('**Расписание**', profile['color']))
 
+    list_widget = QWidget()
+    list_layout = QVBoxLayout(list_widget)
+    list_layout.setSpacing(0)
+    list_layout.setContentsMargins(0, 0, 0, 0)
+
     for time, melody_name in profile['timetable'].items():
-        layout.addWidget(_create_timetable_entry_widget(time, melody_name, profile))
+        list_layout.addWidget(_create_timetable_entry_widget(time, melody_name, profile))
+    
+    layout.addWidget(list_widget)
 
     bottom_section = QWidget()
     bottom_layout = QVBoxLayout(bottom_section)
     text = "Добавить звонок"
     icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
     add_alarm_button = QPushButton(icon, text)
+    add_alarm_button.clicked.connect(lambda: _add_alarm(profile['id'], list_layout))
     bottom_layout.addWidget(add_alarm_button)
 
     layout.addWidget(bottom_section)
