@@ -134,10 +134,57 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
     pass
 
 
-def _create_timetable_entry_widget(time: QTime, melody_name: str) -> QWidget:
-    frame = create_section_frame()
-    layout = QHBoxLayout(frame)
-    return frame
+def _on_edit_melody_name(
+    time: QTime, 
+    profile_id: int,
+    line_edit: QLineEdit
+ ) -> None:
+    profile = profiles.get(profile_id)
+    old_profile = profile.copy()
+    profile['timetable'][time] = line_edit.text()
+    profiles.replace(old_profile, profile)
+
+
+def _on_edit_time(
+    time: QTime, 
+    profile_id: int,
+    time_edit: QTimeEdit
+) -> None:
+    profile = profiles.get(profile_id)
+    old_profile = profile.copy()
+    profile['timetable'][time_edit.time()] = profile['timetable'][time]
+    del(profile['timetable'][time])
+    profiles.replace(old_profile, profile)
+
+    time_edit.timeChanged.disconnect()
+    time_edit.timeChanged.connect(lambda: _on_edit_time(time_edit.time(), profile_id, time_edit))
+
+
+def _create_timetable_entry_widget(
+    time: QTime, 
+    melody_name: str, 
+    profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
+) -> QWidget:
+    widget = create_highlightable_widget()
+
+    layout = QGridLayout(widget)
+
+    time_edit = NotScrollableTimeEdit(time)
+    time_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    time_edit.timeChanged.connect(lambda: _on_edit_time(time, profile['id'], time_edit))
+    layout.addWidget(time_edit, 0, 0, 1, 2)
+
+    melody_edit = QLineEdit(melody_name)
+    melody_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    melody_edit.textChanged.connect(lambda: _on_edit_melody_name(time, profile['id'], melody_edit))
+    layout.addWidget(melody_edit, 1, 0)
+
+    pick_melody_button = QPushButton()
+    pick_melody_button.setIcon(_style.standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
+    pick_melody_button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+    layout.addWidget(pick_melody_button, 1, 1)
+
+    return widget
 
 
 def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
@@ -146,15 +193,19 @@ def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, s
     layout = QVBoxLayout(widget)
     layout.setContentsMargins(0, 0, 0, 0)
     layout.setSpacing(0)
-    layout.addWidget(create_header('**Расписание**'))
-
-    list_widget = QWidget()
-    list_layout = QVBoxLayout(list_widget)
+    layout.addWidget(create_header('**Расписание**', profile['color']))
 
     for time, melody_name in profile['timetable'].items():
-        list_layout.addWidget(_create_timetable_entry_widget(time, melody_name))
-    
-    layout.addWidget(list_widget)
+        layout.addWidget(_create_timetable_entry_widget(time, melody_name, profile))
+
+    bottom_section = QWidget()
+    bottom_layout = QVBoxLayout(bottom_section)
+    text = "Добавить звонок"
+    icon = _style.standardIcon(QStyle.StandardPixmap.SP_FileDialogNewFolder)
+    add_alarm_button = QPushButton(icon, text)
+    bottom_layout.addWidget(add_alarm_button)
+
+    layout.addWidget(bottom_section)
 
     return widget
 
