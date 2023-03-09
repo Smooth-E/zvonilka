@@ -16,7 +16,7 @@ style = window.style()
 
 
 def create_settings_widget() -> QWidget:
-    frame = create_section_frame()
+    frame = SectionFrame()
     QVBoxLayout(frame)
     return frame
 
@@ -24,7 +24,7 @@ def create_settings_widget() -> QWidget:
 def create_timetable_widget() -> QWidget:
     global style
 
-    frame = create_section_frame()
+    frame = SectionFrame()
     layout = QVBoxLayout(frame)
 
     section_profile_editor.initialize(layout, style)

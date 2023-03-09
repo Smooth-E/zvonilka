@@ -22,7 +22,7 @@ def update() -> None:
 def create() -> QWidget:
     global _calendar
 
-    frame = create_section_frame()
+    frame = SectionFrame()
 
     _calendar = ReactiveCalendarWidget()
     _calendar.setGridVisible(True)

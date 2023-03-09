@@ -47,7 +47,7 @@ def _create_profile(date: QDate) -> None:
 def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]], date: QDate) -> QWidget:
     global _style
 
-    widget = create_highlightable_widget(profile['name'])
+    widget = HighlightableWidget(profile['name'])
     widget: QPushButton
     widget.setClickCallback(lambda: _select_profile(date, profile['id']))
 
@@ -80,7 +80,7 @@ def _no_profile(date: QDate) -> None:
     all_profiles = profiles.get_all()
 
     if len(all_profiles) == 0:
-        _parent_layout.addWidget(create_spacer())
+        _parent_layout.addWidget(Spacer())
 
         label = QLabel("Профилей не найдено")
         label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -95,12 +95,12 @@ def _no_profile(date: QDate) -> None:
         _parent_layout.addWidget(button)
         _parent_layout.setAlignment(button, Qt.AlignmentFlag.AlignCenter)
 
-        _parent_layout.addWidget(create_spacer())
+        _parent_layout.addWidget(Spacer())
     else:
         _parent_layout.setContentsMargins(0, 0, 0, 0)
         _parent_layout.setSpacing(0)
 
-        _parent_layout.addWidget(create_header('**Выберите профиль**'))
+        _parent_layout.addWidget(Header('**Выберите профиль**'))
 
         list_widget = QWidget()
         list_layout = QVBoxLayout(list_widget)
@@ -110,7 +110,7 @@ def _no_profile(date: QDate) -> None:
         for profile in profiles.get_all():
             list_layout.addWidget(_create_profile_entry_widget(profile, date))
         
-        list_layout.addWidget(create_spacer())
+        list_layout.addWidget(Spacer())
 
         scroll_area = VerticalScrollArea()
         scroll_area.setWidget(list_widget)
@@ -165,7 +165,7 @@ def _create_timetable_entry_widget(
     melody_name: str, 
     profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
 ) -> QWidget:
-    widget = create_highlightable_widget()
+    widget = HighlightableWidget()
 
     layout = QGridLayout(widget)
 
@@ -188,12 +188,12 @@ def _create_timetable_entry_widget(
 
 
 def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
-    widget = create_section_frame()
+    widget = SectionFrame()
 
     layout = QVBoxLayout(widget)
     layout.setContentsMargins(0, 0, 0, 0)
     layout.setSpacing(0)
-    layout.addWidget(create_header('**Расписание**', profile['color']))
+    layout.addWidget(Header('**Расписание**', profile['color']))
 
     for time, melody_name in profile['timetable'].items():
         layout.addWidget(_create_timetable_entry_widget(time, melody_name, profile))
@@ -216,13 +216,13 @@ def _reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -
     _parent_layout.setContentsMargins(0, 0, 0, 0)
     _parent_layout.setSpacing(0)
 
-    _parent_layout.addWidget(create_header('**Настройка профиля**'))
+    _parent_layout.addWidget(Header('**Настройка профиля**'))
 
     list_widget = QWidget()
     list_layout = QVBoxLayout(list_widget)
     list_layout.addWidget(_create_profile_info_widget(profile))
     list_layout.addWidget(_create_timetable_widget(profile))
-    list_layout.addWidget(create_spacer())
+    list_layout.addWidget(Spacer())
 
     scroll_area = VerticalScrollArea()
     scroll_area.setWidget(list_widget)

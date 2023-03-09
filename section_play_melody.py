@@ -33,7 +33,7 @@ def _pick_default_melody() -> None:
 def create(style: QStyle) -> QWidget:
     global _melody_line_edit
 
-    frame = create_section_frame()
+    frame = SectionFrame()
     layout = QVBoxLayout(frame)
     
     top_bar_layout = QHBoxLayout()

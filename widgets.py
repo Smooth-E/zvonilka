@@ -8,43 +8,49 @@ import datetime
 import random
 
 
-def create_section_frame() -> QFrame:
-    frame = QFrame()
-    frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
-    return frame
+class SectionFrame(QFrame):
 
 
-def create_spacer() -> QWidget:
-    spacer = QWidget()
-    spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-    return spacer
+    def __init__(self, *arguments) -> None:
+        super().__init__(*arguments)
+        self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
 
 
-def create_header(text: str = '', color: QColor = None) -> QWidget:
-    header = QLabel(text)
-    header.setTextFormat(Qt.TextFormat.MarkdownText)
-    header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    header.setContentsMargins(4, 4, 4, 4)
-    header.setAutoFillBackground(True)
+class Spacer(QWidget):
+
+
+    def __init__(self, *arguments) -> None:
+        super().__init__(*arguments)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+
+class Header(QLabel):
     
-    header_palette = header.palette()
 
-    if color is None:
-        header_palette.setColor(header.backgroundRole(), QApplication.palette().highlight().color())
-        header_palette.setColor(header.foregroundRole(), QApplication.palette().highlightedText().color())
-    else:
-        header_palette.setColor(header.backgroundRole(), color)
+    def __init__(self, text: str = '', color: QColor = None) -> None:
+        super().__init__(text)
+        self.setTextFormat(Qt.TextFormat.MarkdownText)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setContentsMargins(4, 4, 4, 4)
+        self.setAutoFillBackground(True)
+    
+        the_palette = self.palette()
 
-        print(color.valueF())
-        if color.valueF() > 0.5:
-            text_color = QColor('#000')
+        if color is None:
+            the_palette.setColor(self.backgroundRole(), QApplication.palette().highlight().color())
+            the_palette.setColor(self.foregroundRole(), QApplication.palette().highlightedText().color())
         else:
-            text_color = QColor('#FFF')
+            the_palette.setColor(self.backgroundRole(), color)
+
+            print(color.valueF())
+            if color.valueF() > 0.5:
+                text_color = QColor('#000')
+            else:
+                text_color = QColor('#FFF')
+            
+            the_palette.setColor(self.foregroundRole(), text_color)
         
-        header_palette.setColor(header.foregroundRole(), text_color)
-    
-    header.setPalette(header_palette)
-    return header
+        self.setPalette(the_palette)
 
 
 class ReactiveCalendarWidget(QCalendarWidget):
@@ -106,25 +112,28 @@ class ClickableQWidget(QWidget):
         return super().mousePressEvent(event)
     
 
-    def setClickCallback(self, callback: Callable[[], Any]):
+    def setClickCallback(self, callback: Callable[[], Any]) -> None:
         self.click_callback = callback
 
 
-def create_highlightable_widget(unique_name: str = str(random.randint(0, 1024))) -> ClickableQWidget:
-    unique_name = unique_name.replace(' ', '-')
-    unique_name = unique_name.replace('.', '-dot-')
-    unique_name = unique_name.replace(',', '-comma-')
+class HighlightableWidget(ClickableQWidget):
+    
+    
+    def __init__(self, unique_name: str = str(random.randint(0, 1024))) -> None:
+        super().__init__()
 
-    highlight_color = QApplication.palette().base().color().name()
+        unique_name = unique_name.replace(' ', '-')
+        unique_name = unique_name.replace('.', '-dot-')
+        unique_name = unique_name.replace(',', '-comma-')
 
-    stylesheet = f'ClickableQWidget#{unique_name}:hover {{ background-color: {highlight_color}; }}'
+        highlight_color = QApplication.palette().base().color().name()
 
-    widget = ClickableQWidget()
-    widget.setObjectName(unique_name)
-    widget.setAccessibleName(unique_name)
-    widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
-    widget.setStyleSheet(stylesheet)
-    return widget
+        stylesheet = f'ClickableQWidget#{unique_name}:hover {{ background-color: {highlight_color}; }}'
+
+        self.setObjectName(unique_name)
+        self.setAccessibleName(unique_name)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        self.setStyleSheet(stylesheet)
 
 
 class NotScrollableTimeEdit(QTimeEdit):
