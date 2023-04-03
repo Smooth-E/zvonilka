@@ -1,5 +1,5 @@
-from playsound import playsound
 from widgets import *
+import audio_player
 import settings
 
 
@@ -13,7 +13,7 @@ def _on_default_melody_path_edited(new_path: str) -> None:
 
 def _play_default_melody() -> None:
     melody = settings.default_melody
-    playsound(melody, False)
+    audio_player.play(melody)
 
 
 def _pick_default_melody() -> None:

@@ -4,7 +4,7 @@ import datetime
 import timetable_calendar
 import time
 from PyQt5.QtCore import *
-from playsound import playsound
+import audio_player
 from typing import *
 
 
@@ -35,7 +35,7 @@ def _safe_behaviour_iteration():
         if melody_name is None:
             return
 
-        playsound(melody_name, False)
+        audio_player.play(melody_name)
     except Exception as exception:
         print('Ошибка в потоке звонков!')
         print(exception)
