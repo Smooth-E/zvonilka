@@ -1,5 +1,4 @@
 from playsound import playsound
-from PyQt6.QtWidgets import *
 from widgets import *
 import settings
 

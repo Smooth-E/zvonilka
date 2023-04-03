@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import timetable_calendar
-from PyQt6.QtGui import *
+from PyQt5.QtGui import *
 from typing import *
 import profiles
 import datetime
@@ -22,13 +22,14 @@ class Spacer(QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
 
-class Header(QLabel):
+def _get_text_color(value_float: float) -> QColor:
+    if value_float > 0.5:
+        return QColor('#000')
+    else:
+        return QColor('#FFF')
 
-    def _get_text_color(self, value_float: float) -> QColor:
-        if value_float > 0.5:
-            return QColor('#000')
-        else:
-            return QColor('#FFF')
+
+class Header(QLabel):
 
     def __init__(self, text: str = '', color: QColor = None) -> None:
         super().__init__(text)
@@ -44,7 +45,7 @@ class Header(QLabel):
             the_palette.setColor(self.foregroundRole(), QApplication.palette().highlightedText().color())
         else:
             the_palette.setColor(self.backgroundRole(), color)
-            the_palette.setColor(self.foregroundRole(), self._get_text_color(color.valueF()))
+            the_palette.setColor(self.foregroundRole(), _get_text_color(color.valueF()))
 
         self.setPalette(the_palette)
 
@@ -56,12 +57,12 @@ class ReactiveCalendarWidget(QCalendarWidget):
 
         profile_id = timetable_calendar.get_profile_id(date)
 
-        if profile_id == None:
+        if profile_id is None:
             return
 
         profile = profiles.get(profile_id)
 
-        if profile == None:
+        if profile is None:
             print(f'Не найден профиль с ID: {profile_id}')
             return
 

@@ -1,4 +1,3 @@
-from PyQt6.QtWidgets import *
 from widgets import *
 import section_profile_editor
 import timetable_calendar

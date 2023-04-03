@@ -1,8 +1,7 @@
 # Этот скрипт генерирует большое количество профилей и вставляет в календарь
 
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from PyQt5.QtGui import *
 from random import randint
 import datetime
 import json

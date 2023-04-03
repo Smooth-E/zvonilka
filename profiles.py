@@ -1,6 +1,6 @@
 import timetable_calendar as calendar
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from copy import copy
 from typing import *
 import random

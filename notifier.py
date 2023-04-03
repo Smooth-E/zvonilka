@@ -3,11 +3,12 @@ import profiles
 import datetime
 import timetable_calendar
 import time
-from PyQt6.QtCore import *
+from PyQt5.QtCore import *
 from playsound import playsound
+from typing import *
 
 
-_thread: Thread = None
+_thread: Union[Thread, None] = None
 _allowed_to_execute: bool = True
 
 
@@ -31,7 +32,7 @@ def _safe_behaviour_iteration():
         print(f'Мелодия:  {melody_name}.')
         print(f'***')
 
-        if melody_name == None:
+        if melody_name is None:
             return
 
         playsound(melody_name, False)
@@ -57,7 +58,7 @@ def _thread_behaviour() -> None:
 def restart():
     global _thread, _allowed_to_execute
 
-    if _thread != None:
+    if _thread is not None:
         _allowed_to_execute = False
         _thread.join()
     

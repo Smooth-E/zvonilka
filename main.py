@@ -1,19 +1,10 @@
-from PyQt6.QtMultimedia import *
 import section_profile_editor
-from PyQt6.QtWidgets import *
 import section_play_melody
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
 import section_calendar
 from widgets import *
 import settings
 import notifier
 import sys
-
-
-application = QApplication(sys.argv)
-window = QWidget()
-style = window.style()
 
 
 def create_settings_widget() -> QWidget:
@@ -57,6 +48,12 @@ def create_base_layout() -> QHBoxLayout:
 
 
 def initialize_app() -> None:
+    global application, window, style
+
+    application = QApplication(sys.argv)
+    window = QWidget()
+    style = window.style()
+
     settings.load_settings()
 
     base_layout = create_base_layout()

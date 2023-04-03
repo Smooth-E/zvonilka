@@ -1,4 +1,4 @@
-from PyQt6.QtCore import *
+from PyQt5.QtCore import *
 from copy import copy
 from typing import *
 import json
@@ -85,8 +85,6 @@ def clear_profile(date: QDate) -> None:
     global _calendar
     _load_calendar()
 
-    print('Got date: ' + str(date))
     _calendar = {key: value for key, value in _calendar.items() if key != date}
 
-    print("saving!")
     _save_calendar()

@@ -1,7 +1,3 @@
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
-import timetable_calendar
-from PyQt6.QtGui import *
 import section_calendar
 from widgets import *
 from typing import *
@@ -38,7 +34,7 @@ def _select_profile(date: QDate, profile_id: int) -> None:
 def _create_profile(date: QDate) -> None:
     profile_id = profiles.add_profile(
         'Безымянный профиль', 
-        QColor.fromString('#3F3F3F'),
+        QColor('#3F3F3F'),
         { QTime(7, 0, 0, 0): 'melody.wav' }
     )
     timetable_calendar.set_profile(date, profile_id)
