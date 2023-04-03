@@ -13,8 +13,6 @@ _allowed_to_execute: bool = True
 
 def _safe_behaviour_iteration():
     try:
-        time.sleep(60)
-
         now = datetime.datetime.now()
         date = QDate(now.year, now.month, now.day)
         profile_id = timetable_calendar.get_profile_id(date)
@@ -46,8 +44,14 @@ def _thread_behaviour() -> None:
     global _allowed_to_execute
 
     print('Поток звонков запущен!')
+    time_passed = 0
     while _allowed_to_execute:
-        _safe_behaviour_iteration()
+        time.sleep(1)
+        time_passed += 1
+
+        if time_passed >= 60:
+            _safe_behaviour_iteration()
+            time_passed = 0
 
 
 def restart():
@@ -60,3 +64,11 @@ def restart():
     _allowed_to_execute = True
     _thread = Thread(target=_thread_behaviour)
     _thread.start()
+
+
+def stop() -> None:
+    global _thread, _allowed_to_execute
+
+    if _thread is not None:
+        _allowed_to_execute = False
+        _thread.join()

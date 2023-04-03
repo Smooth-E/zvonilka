@@ -33,7 +33,7 @@ def create_timetable_widget() -> QWidget:
     return frame
 
 
-def create_base_layout() -> QWidget:
+def create_base_layout() -> QHBoxLayout:
     global style
 
     timetable_widget = create_timetable_widget()
@@ -65,16 +65,18 @@ def initialize_app() -> None:
     window.resize(1920 // 2, 1080 // 2)
 
     rectangle = window.frameGeometry()
-    center = QGuiApplication.primaryScreen().availableGeometry().center()
+    center = application.primaryScreen().availableGeometry().center()
     rectangle.moveCenter(center)
     window.move(rectangle.topLeft())
 
     window.show()
     window.setWindowTitle('Звонилка')
-    window.setWindowIcon(QIcon('resources/icon.png'))
-    sys.exit(application.exec())
+    window.setWindowIcon(QIcon('icon.png'))
+
+    notifier.restart()
+    application.exec()
+    notifier.stop()
 
 
 if __name__ == '__main__':
-    notifier.restart()
-    initialize_app()
+    sys.exit(initialize_app())

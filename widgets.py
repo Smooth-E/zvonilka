@@ -10,7 +10,6 @@ import random
 
 class SectionFrame(QFrame):
 
-
     def __init__(self, *arguments) -> None:
         super().__init__(*arguments)
         self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
@@ -18,14 +17,12 @@ class SectionFrame(QFrame):
 
 class Spacer(QWidget):
 
-
     def __init__(self, *arguments) -> None:
         super().__init__(*arguments)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
 
 class Header(QLabel):
-    
 
     def _get_text_color(self, value_float: float) -> QColor:
         if value_float > 0.5:
@@ -33,14 +30,13 @@ class Header(QLabel):
         else:
             return QColor('#FFF')
 
-
     def __init__(self, text: str = '', color: QColor = None) -> None:
         super().__init__(text)
         self.setTextFormat(Qt.TextFormat.MarkdownText)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setContentsMargins(4, 4, 4, 4)
         self.setAutoFillBackground(True)
-    
+
         the_palette = self.palette()
 
         if color is None:
@@ -49,12 +45,11 @@ class Header(QLabel):
         else:
             the_palette.setColor(self.backgroundRole(), color)
             the_palette.setColor(self.foregroundRole(), self._get_text_color(color.valueF()))
-        
+
         self.setPalette(the_palette)
 
 
 class ReactiveCalendarWidget(QCalendarWidget):
-
 
     def paintCell(self, painter: QPainter, rect: QRect, date: Union[QDate, datetime.date]) -> None:
         super().paintCell(painter, rect, date)
@@ -63,13 +58,13 @@ class ReactiveCalendarWidget(QCalendarWidget):
 
         if profile_id == None:
             return
-        
+
         profile = profiles.get(profile_id)
 
         if profile == None:
             print(f'Не найден профиль с ID: {profile_id}')
             return
-        
+
         color: QColor = profile['color']
         step = min(rect.width(), rect.height()) / 3
 
@@ -85,13 +80,12 @@ class ReactiveCalendarWidget(QCalendarWidget):
 
 class VerticalScrollArea(QScrollArea):
 
-
     def resizeEvent(self, event: QResizeEvent) -> None:
         width = self.widget().minimumSizeHint().width()
 
         if self.verticalScrollBar().isVisible():
             width += self.verticalScrollBar().width()
-        
+
         self.setMinimumWidth(width)
 
         return super().resizeEvent(event)
@@ -99,26 +93,22 @@ class VerticalScrollArea(QScrollArea):
 
 class ClickableQWidget(QWidget):
 
-
     def __init__(self) -> None:
         super().__init__()
         self.click_callback = None
-    
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if self.click_callback is not None:
             self.click_callback()
-        
+
         return super().mousePressEvent(event)
-    
 
     def setClickCallback(self, callback: Callable[[], Any]) -> None:
         self.click_callback = callback
 
 
 class HighlightableWidget(ClickableQWidget):
-    
-    
+
     def __init__(self, unique_name: str = str(random.randint(0, 1024))) -> None:
         super().__init__()
 
@@ -137,7 +127,6 @@ class HighlightableWidget(ClickableQWidget):
 
 
 class NotScrollableTimeEdit(QTimeEdit):
-    
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         return None
@@ -149,11 +138,9 @@ class DisconnectableTimeEdit(QTimeEdit):
         super().__init__(time, parent)
         self.connected_function = None
 
-
     def disconnect_on_time_changed(self) -> None:
         if self.connected_function is not None:
             self.timeChanged.disconnect(self.connected_function)
-    
 
     def connect_on_time_changed(self, function) -> None:
         self.connected_function = function
@@ -162,16 +149,13 @@ class DisconnectableTimeEdit(QTimeEdit):
 
 class DisconnectableLineEdit(QLineEdit):
 
-
     def __init__(self, contents: str = '', parent: Union[QWidget, None] = None) -> None:
         super().__init__(contents, parent)
         self.connected_function = None
-    
 
     def disconnect_on_text_changed(self) -> None:
         if self.connected_function is not None:
             self.textChanged.disconnect(self.connected_function)
-    
 
     def connect_on_text_changed(self, function) -> None:
         self.connected_function = function

@@ -4,16 +4,15 @@ from typing import *
 import json
 import os
 
-
 _file_path = 'calendar.json'
 _loaded = False
-_calendar: Dict[QDate, int] = { }
+_calendar: Dict[QDate, int] = {}
 
 
 def _save_calendar() -> None:
     global _calendar, _file_path
 
-    serialized_calendar = { }
+    serialized_calendar = {}
     for key, value in _calendar.items():
         new_key = f'{key.year()}.{key.month()}.{key.day()}'
         serialized_calendar[new_key] = value
@@ -32,21 +31,21 @@ def _load_calendar() -> None:
 
     if _loaded:
         return
-    
-    _calendar = { }
+
+    _calendar = {}
     _loaded = True
-    
+
     if not os.path.exists(_file_path):
         return
-    
+
     try:
         file = open(_file_path, 'r', encoding='utf-8')
         raw_calendar = json.load(file)
         file.close()
     except Exception as exception:
         return
-    
-    _calendar = { }
+
+    _calendar = {}
     for key, value in raw_calendar.items():
         year, month, day = (int(x) for x in key.split('.'))
         new_key = QDate(year, month, day)
@@ -80,3 +79,14 @@ def get_profile_id(date: QDate) -> Union[int, None]:
     global _calendar
     _load_calendar()
     return _calendar.get(date)
+
+
+def clear_profile(date: QDate) -> None:
+    global _calendar
+    _load_calendar()
+
+    print('Got date: ' + str(date))
+    _calendar = {key: value for key, value in _calendar.items() if key != date}
+
+    print("saving!")
+    _save_calendar()

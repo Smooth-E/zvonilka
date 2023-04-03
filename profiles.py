@@ -61,7 +61,7 @@ def _generate_unique_id() -> int:
         id = random.randint(0, 1001)
 
 
-def deserialize_timetable(timetable: Dict[str, str]) -> Dict[QTime, str]:
+def _deserialize_timetable(timetable: Dict[str, str]) -> Dict[QTime, str]:
     new_timetable = { }
 
     for key, value in timetable.items():
@@ -72,7 +72,7 @@ def deserialize_timetable(timetable: Dict[str, str]) -> Dict[QTime, str]:
     return new_timetable
 
 
-def serialize_timetable(timetable: Dict[QTime, str]) -> Dict[str, str]:
+def _serialize_timetable(timetable: Dict[QTime, str]) -> Dict[str, str]:
     new_timetable = { }
 
     for key, value in timetable.items():
@@ -110,7 +110,7 @@ def _load_profiles() -> None:
         new_profile['id'] = int(profile['id'])
         new_profile['name'] = str(profile['name'])
         new_profile['color'] = QColor(int(profile['color']))
-        new_profile['timetable'] = deserialize_timetable(profile['timetable'])
+        new_profile['timetable'] = _deserialize_timetable(profile['timetable'])
         _profiles.append(new_profile)
 
 
@@ -123,7 +123,7 @@ def _save_profiles() -> None:
         serialized['id'] = profile['id']
         serialized['name'] = profile['name']
         serialized['color'] = profile['color'].rgb()
-        serialized['timetable'] = serialize_timetable(profile['timetable'])
+        serialized['timetable'] = _serialize_timetable(profile['timetable'])
         serialized_profiles.append(serialized)
 
     try:

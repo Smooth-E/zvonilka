@@ -153,7 +153,12 @@ def _on_profile_name_changed(profile_id: int, line_edit: QLineEdit) -> None:
     profiles.replace(old_profile, profile)
 
 
-def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
+def _on_clear_profile(date: QDate) -> None:
+    timetable_calendar.clear_profile(date)
+    section_calendar.update()
+
+
+def _create_profile_info_widget(date: QDate, profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
     widget = SectionFrame()
 
     layout = QVBoxLayout(widget)
@@ -162,21 +167,21 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
     
     layout.addWidget(Header('**Свойства профиля**', profile['color']))
 
-    child_widget = QWidget()
-    child_layout = QGridLayout(child_widget)
+    options_widget = QWidget()
+    options_layout = QGridLayout(options_widget)
 
     description_profile_name = QLabel(text='Имя:')
     description_profile_name.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter)
-    child_layout.addWidget(description_profile_name, 0, 0)
+    options_layout.addWidget(description_profile_name, 0, 0)
 
     profile_name_edit = QLineEdit(profile['name'])
     profile_name_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
     profile_name_edit.textChanged.connect(lambda: _on_profile_name_changed(profile['id'], profile_name_edit))
-    child_layout.addWidget(profile_name_edit, 0, 1)
+    options_layout.addWidget(profile_name_edit, 0, 1)
 
     description_profile_color = QLabel(text='Цвет:')
     description_profile_color.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
-    child_layout.addWidget(description_profile_color, 1, 0)
+    options_layout.addWidget(description_profile_color, 1, 0)
 
     change_color_button = QPushButton('something')
     change_color_button.clicked.connect(lambda: _on_change_profile_color(profile['id']))
@@ -192,9 +197,15 @@ def _create_profile_info_widget(profile: Dict[str, Union[str, QColor, Dict[QTime
     color_swatch.setStyleSheet(f'background-color: {color_name}')
 
     change_color_helper_layout.addWidget(color_swatch)
-    child_layout.addWidget(change_color_button, 1, 1)
+    options_layout.addWidget(change_color_button, 1, 1)
 
-    layout.addWidget(child_widget)
+    layout.addWidget(options_widget)
+
+    icon = _style.standardIcon(QStyle.StandardPixmap.SP_BrowserReload)
+    clear_profile_button = QPushButton(icon, 'Сменить профиль')
+    clear_profile_button.clicked.connect(lambda: _on_clear_profile(date))
+    clear_profile_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    options_layout.addWidget(clear_profile_button, 2, 0, 1, 2)
 
     return widget
 
@@ -337,7 +348,7 @@ def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, s
     return widget
 
 
-def _reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
+def _reflect_profile(date: QDate, profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
     global _parent_layout
 
     _parent_layout.setContentsMargins(0, 0, 0, 0)
@@ -347,7 +358,7 @@ def _reflect_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -
 
     list_widget = QWidget()
     list_layout = QVBoxLayout(list_widget)
-    list_layout.addWidget(_create_profile_info_widget(profile))
+    list_layout.addWidget(_create_profile_info_widget(date, profile))
     list_layout.addWidget(_create_timetable_widget(profile))
     list_layout.addWidget(Spacer())
 
@@ -372,6 +383,6 @@ def update(profile_id: int, date: QDate) -> None:
         profile = None
     
     if profile is not None:
-        _reflect_profile(profile)
+        _reflect_profile(date, profile)
     else:
         _no_profile(date)
