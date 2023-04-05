@@ -135,7 +135,7 @@ def _on_profile_color_selected(profile_id: int, color_dialog: QColorDialog) -> N
     section_calendar.update()
 
 
-def _on_change_profile_color(profile_id: int) -> None:
+def _pick_profile_color(profile_id: int) -> None:
     profile = profiles.get(profile_id)
     dialog = QColorDialog(profile['color'])
     dialog.colorSelected.connect(lambda: _on_profile_color_selected(profile_id, dialog))
@@ -180,7 +180,7 @@ def _create_profile_info_widget(date: QDate, profile: Dict[str, Union[str, QColo
     options_layout.addWidget(description_profile_color, 1, 0)
 
     change_color_button = QPushButton('something')
-    change_color_button.clicked.connect(lambda: _on_change_profile_color(profile['id']))
+    change_color_button.clicked.connect(lambda: _pick_profile_color(profile['id']))
 
     change_color_helper_layout = QHBoxLayout(change_color_button)
     change_color_helper_layout.setContentsMargins(4, 4, 4, 4)
@@ -220,23 +220,47 @@ def _on_edit_melody_name(
 def _on_edit_time(
     time: QTime, 
     profile_id: int,
-    time_edit: DisconnectableTimeEdit,
+    time_line_edit: CachingDisconnectableLineEdit,
     melody_edit: DisconnectableLineEdit
 ) -> None:
     profile = profiles.get(profile_id)
     old_profile = profile.copy()
 
-    new_time = time_edit.time()
+    print(time_line_edit.cached_value)
+
+    text = time_line_edit.text().split(':')
+
+    correct_formatting = \
+        len(text) == 2 and \
+        text[0].isdigit() and \
+        text[1].isdigit() and \
+        0 <= int(text[0]) <= 23 and \
+        0 <= int(text[1]) <= 59
+
+    if not correct_formatting:
+        print("Неверное форматирование времени!")
+        time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
+        return
+
+    new_time = QTime(int(text[0]), int(text[1]), 0)
+    if time != new_time and profile['timetable'].get(new_time) is not None:
+        print('Звонок на это время уже существует!')
+        time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
+        return
+
     profile['timetable'][new_time] = profile['timetable'][time]
     del(profile['timetable'][time])
 
     profiles.replace(old_profile, profile)
 
-    time_edit.disconnect_on_time_changed()
-    time_edit.connect_on_time_changed(lambda: _on_edit_time(new_time, profile_id, time_edit, melody_edit))
+    time_line_edit.disconnect_on_text_changed()
+    time_line_edit.connect_on_text_changed(lambda: _on_edit_time(new_time, profile_id, time_line_edit, melody_edit))
     
     melody_edit.disconnect_on_text_changed()
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(new_time, profile_id, melody_edit))
+
+    time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
+    time_line_edit.apply_changes()
 
 
 def _delete_alarm(widget: QWidget, profile_id: int, time: QTime) -> None:
@@ -271,11 +295,11 @@ def _create_profile_timetable_entry_widget(
     melody_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(time, profile['id'], melody_edit))
 
-    time_edit = DisconnectableTimeEdit(time)
-    time_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-    time_edit.connect_on_time_changed(lambda: _on_edit_time(time, profile['id'], time_edit, melody_edit))
+    time_line_edit = CachingDisconnectableLineEdit(f'{time.hour()}:{time.minute()}')
+    time_line_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+    time_line_edit.connect_on_text_changed(lambda: _on_edit_time(time, profile['id'], time_line_edit, melody_edit))
 
-    layout.addWidget(time_edit, 0, 0)
+    layout.addWidget(time_line_edit, 0, 0)
     layout.addWidget(melody_edit, 1, 0)
 
     delete_alarm_button = QPushButton()

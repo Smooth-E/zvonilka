@@ -8,6 +8,13 @@ import datetime
 import random
 
 
+def _get_contrast_text_color(background_value_float: float) -> QColor:
+    if background_value_float > 0.5:
+        return QColor('#000')
+    else:
+        return QColor('#FFF')
+
+
 class SectionFrame(QFrame):
 
     def __init__(self, *arguments) -> None:
@@ -20,13 +27,6 @@ class Spacer(QWidget):
     def __init__(self, *arguments) -> None:
         super().__init__(*arguments)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-
-def _get_text_color(value_float: float) -> QColor:
-    if value_float > 0.5:
-        return QColor('#000')
-    else:
-        return QColor('#FFF')
 
 
 class Header(QLabel):
@@ -45,7 +45,7 @@ class Header(QLabel):
             the_palette.setColor(self.foregroundRole(), QApplication.palette().highlightedText().color())
         else:
             the_palette.setColor(self.backgroundRole(), color)
-            the_palette.setColor(self.foregroundRole(), _get_text_color(color.valueF()))
+            the_palette.setColor(self.foregroundRole(), _get_contrast_text_color(color.valueF()))
 
         self.setPalette(the_palette)
 
@@ -150,9 +150,11 @@ class DisconnectableTimeEdit(QTimeEdit):
 
 class DisconnectableLineEdit(QLineEdit):
 
-    def __init__(self, contents: str = '', parent: Union[QWidget, None] = None) -> None:
+    def __init__(self, contents: str = '', parent: Union[QWidget, None] = None, icon: QIcon = None) -> None:
         super().__init__(contents, parent)
         self.connected_function = None
+        self.icon = icon
+        self.set_icon(icon)
 
     def disconnect_on_text_changed(self) -> None:
         if self.connected_function is not None:
@@ -161,3 +163,42 @@ class DisconnectableLineEdit(QLineEdit):
     def connect_on_text_changed(self, function) -> None:
         self.connected_function = function
         self.textChanged.connect(function)
+
+    def set_icon(self, icon: QIcon) -> None:
+        if icon is None:
+            self.setTextMargins(1, 1, 1, 1)
+        else:
+            self.setTextMargins(1, 1, 20, 1)
+        self.icon = icon
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        super().paintEvent(event)
+
+        if self.icon is None:
+            return
+
+        painter = QPainter(self)
+        pixmap = self.icon.pixmap(self.height() - 10, self.height() - 10)
+        painter.drawPixmap(self.width() - pixmap.width() - 5, 5, pixmap)
+
+
+class CachingDisconnectableLineEdit(DisconnectableLineEdit):
+
+    def __init__(self, contents: str = '', cached_value: str = '', parent: Union[QWidget, None] = None, icon: QIcon = None):
+        super().__init__(contents, parent, icon)
+
+        if cached_value is None or cached_value == '':
+            self.cached_value = contents
+        else:
+            self.cached_value = cached_value
+
+    def reset_contents(self):
+        self.setText(self.cached_value)
+        self.clearFocus()
+
+    def setText(self, text: str) -> None:
+        super().setText(text)
+        self.cached_value = text
+
+    def apply_changes(self):
+        self.setText(self.text())

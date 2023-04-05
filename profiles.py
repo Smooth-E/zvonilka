@@ -130,8 +130,9 @@ def _save_profiles() -> None:
         file = open(_file_path, 'w+', encoding='utf-8')
         json.dump(serialized_profiles, file, ensure_ascii=False, sort_keys=True, indent=4)
         file.close()
+        print('Профили успешно сохранены!\n' + json.dumps(serialized_profiles, ensure_ascii=False, sort_keys=True,  indent=4))
     except Exception as exception:
-        print('Ошибкам сохранения профилей!')
+        print('Ошибка сохранения профилей!')
         print(exception.with_traceback(None))
 
 
