@@ -71,7 +71,7 @@ def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTim
     return widget
 
 
-def _no_profile(date: QDate) -> None:
+def _reflect_no_profile(date: QDate) -> None:
     global _parent_layout, _style
 
     all_profiles = profiles.get_all()
@@ -256,7 +256,7 @@ def _pick_alarm_melody(line_edit: DisconnectableLineEdit) -> None:
     line_edit.setText(file_name)
 
 
-def _create_timetable_entry_widget(
+def _create_profile_timetable_entry_widget(
     time: QTime, 
     melody_name: str, 
     profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
@@ -310,10 +310,10 @@ def _add_alarm(profile_id: int, layout: QLayout) -> None:
     new_profile['timetable'][last_alarm] = melody_name
     profiles.replace(old_profile, new_profile)
 
-    layout.addWidget(_create_timetable_entry_widget(last_alarm, melody_name, new_profile))
+    layout.addWidget(_create_profile_timetable_entry_widget(last_alarm, melody_name, new_profile))
 
 
-def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
+def _create_profile_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> QWidget:
     widget = SectionFrame()
 
     layout = QVBoxLayout(widget)
@@ -327,7 +327,7 @@ def _create_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[QTime, s
     list_layout.setContentsMargins(0, 0, 0, 0)
 
     for time, melody_name in profile['timetable'].items():
-        list_layout.addWidget(_create_timetable_entry_widget(time, melody_name, profile))
+        list_layout.addWidget(_create_profile_timetable_entry_widget(time, melody_name, profile))
     
     layout.addWidget(list_widget)
 
@@ -355,7 +355,7 @@ def _reflect_profile(date: QDate, profile: Dict[str, Union[str, QColor, Dict[QTi
     list_widget = QWidget()
     list_layout = QVBoxLayout(list_widget)
     list_layout.addWidget(_create_profile_info_widget(date, profile))
-    list_layout.addWidget(_create_timetable_widget(profile))
+    list_layout.addWidget(_create_profile_timetable_widget(profile))
     list_layout.addWidget(Spacer())
 
     scroll_area = VerticalScrollArea()
@@ -381,4 +381,4 @@ def update(profile_id: int, date: QDate) -> None:
     if profile is not None:
         _reflect_profile(date, profile)
     else:
-        _no_profile(date)
+        _reflect_no_profile(date)

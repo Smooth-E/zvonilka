@@ -7,7 +7,6 @@ from PyQt5.QtCore import *
 import audio_player
 from typing import *
 
-
 _thread: Union[Thread, None] = None
 _allowed_to_execute: bool = True
 
@@ -17,15 +16,15 @@ def _safe_behaviour_iteration():
         now = datetime.datetime.now()
         date = QDate(now.year, now.month, now.day)
         profile_id = timetable_calendar.get_profile_id(date)
-        
-        if profile_id == None:
+
+        if profile_id is None:
             return
 
         profile = profiles.get(profile_id)
         timetable = profile['timetable']
-        current_time = QTime(now.hour, now.minute, 0)
+        current_time = QTime(now.hour, now.minute, now.second)
         melody_name = timetable.get(current_time)
-        
+
         print(f'Поток звонков: информация из файлов сохранения.')
         print(f'Дата сейчас: {date}.')
         print(f'Время сейчас: {current_time}.')
@@ -45,14 +44,9 @@ def _thread_behaviour() -> None:
     global _allowed_to_execute
 
     print('Поток звонков запущен!')
-    time_passed = 0
     while _allowed_to_execute:
         time.sleep(1)
-        time_passed += 1
-
-        if time_passed >= 60:
-            _safe_behaviour_iteration()
-            time_passed = 0
+        _safe_behaviour_iteration()
 
 
 def restart():
@@ -61,7 +55,7 @@ def restart():
     if _thread is not None:
         _allowed_to_execute = False
         _thread.join()
-    
+
     _allowed_to_execute = True
     _thread = Thread(target=_thread_behaviour)
     _thread.start()
