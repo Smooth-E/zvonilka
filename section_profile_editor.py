@@ -20,6 +20,26 @@ def initialize(parent_layout: QVBoxLayout, application_style: QStyle) -> None:
     _style = application_style
 
 
+def _show_profile_deletion_warning(widget: QWidget, profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
+    icon = _style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning)
+    title = 'Удаление профиля'
+    text = \
+        'Внимание! ' + \
+        'Удаление профиля также отвяжет его от всех дней, на которые он был присвоен. ' + \
+        'Вы уверены, что хотите удалить профиль, а отвязать его от всех соответствующих дней?'
+
+    message_box = QMessageBox(QMessageBox.Icon.Warning, title, text, QMessageBox.Yes | QMessageBox.No, widget)
+    button_yes = message_box.button(QMessageBox.Yes)
+    button_yes.setText('Да')
+    button_no = message_box.button(QMessageBox.No)
+    button_no.setText('Нет')
+    message_box.setDefaultButton(button_no)
+    message_box.exec()
+
+    if message_box.clickedButton() == button_yes:
+        _delete_profile(profile)
+
+
 def _delete_profile(profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]) -> None:
     profiles.remove(profile)
     section_calendar.update()
@@ -64,7 +84,7 @@ def _create_profile_entry_widget(profile: Dict[str, Union[str, QColor, Dict[QTim
 
     icon_delete = _style.standardIcon(QStyle.StandardPixmap.SP_DialogDiscardButton)
     button_delete = QPushButton(icon=icon_delete)
-    button_delete.clicked.connect(lambda: _delete_profile(profile))
+    button_delete.clicked.connect(lambda: _show_profile_deletion_warning(widget, profile))
     layout.addWidget(button_delete)
 
     return widget
