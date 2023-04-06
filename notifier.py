@@ -9,6 +9,12 @@ from typing import *
 
 _thread: Union[Thread, None] = None
 _allowed_to_execute: bool = True
+_enable_logging = False
+
+
+def _print_logs(message: str) -> None:
+    if _enable_logging:
+        print(message)
 
 
 def _safe_behaviour_iteration():
@@ -25,11 +31,11 @@ def _safe_behaviour_iteration():
         current_time = QTime(now.hour, now.minute, now.second)
         melody_name = timetable.get(current_time)
 
-        print(f'Поток звонков: информация из файлов сохранения.')
-        print(f'Дата сейчас: {date}.')
-        print(f'Время сейчас: {current_time}.')
-        print(f'Мелодия:  {melody_name}.')
-        print(f'***')
+        _print_logs(f'Поток звонков: информация из файлов сохранения.')
+        _print_logs(f'Дата сейчас: {date}.')
+        _print_logs(f'Время сейчас: {current_time}.')
+        _print_logs(f'Мелодия:  {melody_name}.')
+        _print_logs(f'***')
 
         if melody_name is None:
             return
@@ -43,7 +49,7 @@ def _safe_behaviour_iteration():
 def _thread_behaviour() -> None:
     global _allowed_to_execute
 
-    print('Поток звонков запущен!')
+    _print_logs('Поток звонков запущен!')
     while _allowed_to_execute:
         time.sleep(1)
         _safe_behaviour_iteration()

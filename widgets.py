@@ -150,11 +150,19 @@ class DisconnectableTimeEdit(QTimeEdit):
 
 class DisconnectableLineEdit(QLineEdit):
 
-    def __init__(self, contents: str = '', parent: Union[QWidget, None] = None, icon: QIcon = None) -> None:
+    def __init__(
+        self,
+        contents: str = '',
+        parent: Union[QWidget, None] = None,
+        icon: QIcon = None,
+        fade_initial_icon: bool = False
+    ) -> None:
         super().__init__(contents, parent)
         self.connected_function = None
         self.icon = icon
-        self.set_icon(icon)
+        self.fade_amount = 1.0
+        self.animation_timer: QTimer = None
+        self.set_icon(icon, fade_initial_icon)
 
     def disconnect_on_text_changed(self) -> None:
         if self.connected_function is not None:
@@ -164,12 +172,33 @@ class DisconnectableLineEdit(QLineEdit):
         self.connected_function = function
         self.textChanged.connect(function)
 
-    def set_icon(self, icon: QIcon) -> None:
+    def _perform_animation(self):
+        self.fade_amount -= 0.001 / 2
+
+        if self.fade_amount <= 0:
+            self.set_icon(None)
+
+        self.repaint()
+
+    def set_icon(self, icon: Union[QIcon, None], fade: bool = False) -> None:
+        if self.animation_timer is not None:
+            self.animation_timer.stop()
+            self.animation_timer = None
+
+        self.fade_amount = 1.0
         if icon is None:
             self.setTextMargins(1, 1, 1, 1)
         else:
             self.setTextMargins(1, 1, 20, 1)
         self.icon = icon
+
+        if not fade or icon is None:
+            return
+
+        self.animation_timer = QTimer(self)
+        self.animation_timer.timeout.connect(self._perform_animation)
+        self.animation_timer.start(1)
+        print('Animation timer started!')
 
     def paintEvent(self, event: QPaintEvent) -> None:
         super().paintEvent(event)
@@ -177,14 +206,21 @@ class DisconnectableLineEdit(QLineEdit):
         if self.icon is None:
             return
 
-        painter = QPainter(self)
         pixmap = self.icon.pixmap(self.height() - 10, self.height() - 10)
+        painter = QPainter(self)
+        painter.setOpacity(self.fade_amount)
         painter.drawPixmap(self.width() - pixmap.width() - 5, 5, pixmap)
 
 
 class CachingDisconnectableLineEdit(DisconnectableLineEdit):
 
-    def __init__(self, contents: str = '', cached_value: str = '', parent: Union[QWidget, None] = None, icon: QIcon = None):
+    def __init__(
+        self,
+        contents: str = '',
+        cached_value: str = '',
+        parent: Union[QWidget, None] = None,
+        icon: QIcon = None
+    ) -> None:
         super().__init__(contents, parent, icon)
 
         if cached_value is None or cached_value == '':

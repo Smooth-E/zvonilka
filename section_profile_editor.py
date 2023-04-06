@@ -4,7 +4,6 @@ from typing import *
 import profiles
 from copy import copy
 
-
 _parent_layout: QLayout
 _style: QStyle
 
@@ -33,9 +32,9 @@ def _select_profile(date: QDate, profile_id: int) -> None:
 
 def _create_profile(date: QDate) -> None:
     profile_id = profiles.add_profile(
-        'Безымянный профиль', 
+        'Безымянный профиль',
         QColor('#3F3F3F'),
-        { QTime(7, 0, 0, 0): 'melody.wav' }
+        {QTime(7, 0, 0, 0): 'melody.wav'}
     )
     timetable_calendar.set_profile(date, profile_id)
     section_calendar.update()
@@ -106,7 +105,7 @@ def _reflect_no_profile(date: QDate) -> None:
 
         for profile in profiles.get_all():
             list_layout.addWidget(_create_profile_entry_widget(profile, date))
-        
+
         list_layout.addWidget(Spacer())
 
         scroll_area = VerticalScrollArea()
@@ -160,7 +159,7 @@ def _create_profile_info_widget(date: QDate, profile: Dict[str, Union[str, QColo
     layout = QVBoxLayout(widget)
     layout.setContentsMargins(0, 0, 0, 0)
     layout.setSpacing(0)
-    
+
     layout.addWidget(Header('**Свойства профиля**', profile['color']))
 
     options_widget = QWidget()
@@ -207,10 +206,10 @@ def _create_profile_info_widget(date: QDate, profile: Dict[str, Union[str, QColo
 
 
 def _on_edit_melody_name(
-    time: QTime, 
-    profile_id: int,
-    line_edit: DisconnectableLineEdit
- ) -> None:
+        time: QTime,
+        profile_id: int,
+        line_edit: DisconnectableLineEdit
+) -> None:
     profile = profiles.get(profile_id)
     old_profile = profile.copy()
     profile['timetable'][time] = line_edit.text()
@@ -218,34 +217,37 @@ def _on_edit_melody_name(
 
 
 def _on_edit_time(
-    time: QTime, 
-    profile_id: int,
-    time_line_edit: CachingDisconnectableLineEdit,
-    melody_edit: DisconnectableLineEdit
+        time: QTime,
+        profile_id: int,
+        time_line_edit: CachingDisconnectableLineEdit,
+        melody_edit: DisconnectableLineEdit
 ) -> None:
     profile = profiles.get(profile_id)
     old_profile = profile.copy()
 
-    print(time_line_edit.cached_value)
-
-    text = time_line_edit.text().split(':')
+    split_up_text = time_line_edit.text().split(':')
 
     correct_formatting = \
-        len(text) == 2 and \
-        text[0].isdigit() and \
-        text[1].isdigit() and \
-        0 <= int(text[0]) <= 23 and \
-        0 <= int(text[1]) <= 59
+        len(split_up_text) == 2 and \
+        split_up_text[0].isdigit() and \
+        split_up_text[1].isdigit() and \
+        0 <= int(split_up_text[0]) <= 23 and \
+        0 <= int(split_up_text[1]) <= 59
 
     if not correct_formatting:
         print("Неверное форматирование времени!")
         time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
         return
 
-    new_time = QTime(int(text[0]), int(text[1]), 0)
-    if time != new_time and profile['timetable'].get(new_time) is not None:
+    new_time = QTime(int(split_up_text[0]), int(split_up_text[1]), 0)
+    if (time != new_time and profile['timetable'].get(new_time) is not None):
         print('Звонок на это время уже существует!')
         time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
+        return
+
+    if time == new_time:
+        print('Новое введенное время идентично предыдущему!')
+        time_line_edit.set_icon(None)
         return
 
     profile['timetable'][new_time] = profile['timetable'][time]
@@ -255,18 +257,18 @@ def _on_edit_time(
 
     time_line_edit.disconnect_on_text_changed()
     time_line_edit.connect_on_text_changed(lambda: _on_edit_time(new_time, profile_id, time_line_edit, melody_edit))
-    
+
     melody_edit.disconnect_on_text_changed()
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(new_time, profile_id, melody_edit))
 
-    time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_DialogApplyButton))
+    time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton), True)
     time_line_edit.apply_changes()
 
 
 def _delete_alarm(widget: QWidget, profile_id: int, time: QTime) -> None:
     profile = profiles.get(profile_id)
     new_profile = copy(profile)
-    del(new_profile['timetable'][time])
+    del (new_profile['timetable'][time])
     profiles.replace(profile, new_profile)
     widget.setParent(None)
 
@@ -276,14 +278,14 @@ def _pick_alarm_melody(line_edit: DisconnectableLineEdit) -> None:
 
     if file_name == '':
         return
-    
+
     line_edit.setText(file_name)
 
 
 def _create_profile_timetable_entry_widget(
-    time: QTime, 
-    melody_name: str, 
-    profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
+        time: QTime,
+        melody_name: str,
+        profile: Dict[str, Union[str, QColor, Dict[QTime, str]]]
 ) -> QWidget:
     global _style
 
@@ -295,7 +297,7 @@ def _create_profile_timetable_entry_widget(
     melody_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(time, profile['id'], melody_edit))
 
-    time_line_edit = CachingDisconnectableLineEdit(f'{time.hour()}:{time.minute()}')
+    time_line_edit = CachingDisconnectableLineEdit(f'{time.hour():02d}:{time.minute():02d}')
     time_line_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
     time_line_edit.connect_on_text_changed(lambda: _on_edit_time(time, profile['id'], time_line_edit, melody_edit))
 
@@ -327,9 +329,9 @@ def _add_alarm(profile_id: int, layout: QLayout) -> None:
     else:
         last_alarm = keys[-1]
         melody_name = old_profile['timetable'][last_alarm]
-    
+
     last_alarm = last_alarm.addSecs(60)
-    
+
     new_profile = copy(old_profile)
     new_profile['timetable'][last_alarm] = melody_name
     profiles.replace(old_profile, new_profile)
@@ -352,7 +354,7 @@ def _create_profile_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[
 
     for time, melody_name in profile['timetable'].items():
         list_layout.addWidget(_create_profile_timetable_entry_widget(time, melody_name, profile))
-    
+
     layout.addWidget(list_widget)
 
     bottom_section = QWidget()
@@ -401,7 +403,7 @@ def update(profile_id: int, date: QDate) -> None:
         profile = profiles.get(profile_id)
     else:
         profile = None
-    
+
     if profile is not None:
         _reflect_profile(date, profile)
     else:
