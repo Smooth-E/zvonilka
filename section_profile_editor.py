@@ -252,17 +252,19 @@ def _on_edit_time(
         split_up_text[0].isdigit() and \
         split_up_text[1].isdigit() and \
         0 <= int(split_up_text[0]) <= 23 and \
-        0 <= int(split_up_text[1]) <= 59
+        0 <= int(split_up_text[1]) <= 59 and \
+        len(split_up_text[0]) <= 2 and \
+        len(split_up_text[1]) <= 2
 
     if not correct_formatting:
         print("Неверное форматирование времени!")
-        time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))
+        time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
         return
 
     new_time = QTime(int(split_up_text[0]), int(split_up_text[1]), 0)
-    if (time != new_time and profile['timetable'].get(new_time) is not None):
+    if time != new_time and profile['timetable'].get(new_time) is not None:
         print('Звонок на это время уже существует!')
-        time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxWarning))
+        time_line_edit.set_icon(QIcon('icons/override.png'))
         return
 
     if time == new_time:

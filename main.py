@@ -68,7 +68,7 @@ def initialize_app() -> None:
 
     window.show()
     window.setWindowTitle('Звонилка')
-    window.setWindowIcon(QIcon('icon.png'))
+    window.setWindowIcon(QIcon('icons/icon.png'))
 
     notifier.restart()
     application.exec()
