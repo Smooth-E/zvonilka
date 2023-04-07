@@ -25,8 +25,10 @@ def load_settings() -> None:
         dictionary = json.loads(data)
         _deserialize_settings(dictionary)
         file.close()
-    except Exception as exception:
-        print('Ошибка загрузки информации о настройках приложения!')
+    except Exception:
+        _deserialize_settings({})
+        save_settings()
+        print('Выставлены настройки приложения по умолчанию!')
 
 
 def save_settings() -> None:
