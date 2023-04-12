@@ -374,7 +374,7 @@ def _create_profile_timetable_widget(profile: Dict[str, Union[str, QColor, Dict[
     list_layout.setSpacing(0)
     list_layout.setContentsMargins(0, 0, 0, 0)
 
-    for time, melody_name in profile['timetable'].items():
+    for time, melody_name in sorted(profile['timetable'].items()):
         list_layout.addWidget(_create_profile_timetable_entry_widget(time, melody_name, profile))
 
     layout.addWidget(list_widget)
