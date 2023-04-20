@@ -284,7 +284,6 @@ def _on_edit_time(
     melody_edit.connect_on_text_changed(lambda: _on_edit_melody_name(new_time, profile_id, melody_edit))
 
     time_line_edit.set_icon(_style.standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton), True)
-    time_line_edit.apply_changes()
 
 
 def _delete_alarm(widget: QWidget, profile_id: int, time: QTime) -> None:

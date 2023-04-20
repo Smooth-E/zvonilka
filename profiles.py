@@ -76,7 +76,7 @@ def _serialize_timetable(timetable: Dict[QTime, str]) -> Dict[str, str]:
     new_timetable = { }
 
     for key, value in timetable.items():
-        new_key = f'{key.hour()}:{key.minute()}'
+        new_key = f'{key.hour():02d}:{key.minute():02d}'
         new_timetable[new_key] = value
 
     return new_timetable
